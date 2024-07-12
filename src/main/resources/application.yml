@@ -1,8 +1,4 @@
 spring:
   profiles:
-    active: ["db"]
+    active: ["db", "swagger"]
 
-logging:
-  level:
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari: TRACE
