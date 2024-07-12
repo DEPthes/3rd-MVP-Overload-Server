@@ -32,6 +32,9 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-
+application-swagger.yml
 ### VS Code ###
 .vscode/
+
+### Database
+/src/main/resources/application-db.yml
