@@ -30,7 +30,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper(); //5
 
-    private final String NO_CHECK_URL = "/auth/login"; //1
+    private final String NO_CHECK_URL = "/auth/sign-in"; //1
 
     /**
      * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
@@ -88,7 +88,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 //        userRepository.findByRefreshToken(refreshToken).ifPresent(
 //                users -> jwtProvider.sendAccessToken(response, jwtProvider.createAccessToken(users.getEmail()))
 //        );
-
 
     }
 }

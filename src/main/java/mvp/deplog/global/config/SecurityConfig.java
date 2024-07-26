@@ -57,7 +57,7 @@ public class SecurityConfig {
                 )
 
                 .logout((logout) -> logout
-                        .logoutSuccessUrl("/auth/login")
+                        .logoutSuccessUrl("/auth/sign-in")
                         .invalidateHttpSession(true))
 
                 .addFilterAfter(jsonAuthenticationFilter(), LogoutFilter.class)

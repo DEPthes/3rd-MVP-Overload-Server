@@ -32,24 +32,16 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
         jwtProvider.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
-//        userRepository.findByEmail(email)
-//                .ifPresent(users -> users.updateRefreshToken(refreshToken));
-
         userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
+        // Description : 해당 클래스는 로그인 성공 시이므로 else의 경우 예외 처리 하면 안 됨
         refreshTokenRepository.findByUserEmail(email)
                 .ifPresent(findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken));
 
-        // Description : 해당 클래스는 로그인 성공 시이므로 else의 경우 예외 처리 하면 안 됨
-//                .ifPresentOrElse(
-//                        findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
-//                        () -> new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email)
-//                );
-
         log.info( "로그인에 성공합니다. email: {}" , email);
-        log.info( "AccessToken 을 발급합니다. AccessToken: {}" ,accessToken);
-        log.info( "RefreshToken 을 발급합니다. RefreshToken: {}" ,refreshToken);
+        log.info( "AccessToken을 발급합니다. AccessToken: {}" ,accessToken);
+        log.info( "RefreshToken을 발급합니다. RefreshToken: {}" ,refreshToken);
 
         response.getWriter().write("success");
     }

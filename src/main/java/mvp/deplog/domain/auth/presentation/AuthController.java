@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
-import mvp.deplog.domain.auth.dto.SignInReq;
 import mvp.deplog.domain.auth.dto.SignUpReq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,13 +31,5 @@ public class AuthController {
             @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody SignUpReq signUpReq
     ) {
         return authServiceImpl.signUp(signUpReq);
-    }
-
-    @Operation(summary = "로그인", description = "로그인을 수행합니다.")
-    @PostMapping(value = "/sign-in")
-    public ResponseEntity<?> signIn(
-            @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody SignInReq signInReq
-    ) {
-        return authServiceImpl.signIn(signInReq);
     }
 }
