@@ -1,4 +1,4 @@
 spring:
   profiles:
-    active: ["db", "swagger"]
+    active: ["db", "jwt", "swagger"]
 
