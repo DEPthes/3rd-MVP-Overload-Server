@@ -36,21 +36,4 @@ public class AuthServiceImpl implements AuthService{
         userRepository.save(user);
         return ResponseEntity.ok("회원가입 완료");
     }
-
-
-//    @Override
-//    @Transactional
-//    public ResponseEntity<?> signIn(SignInReq signInReq) {
-//        UsernamePasswordAuthenticationToken authenticationToken =
-//                new UsernamePasswordAuthenticationToken(signInReq.getEmail(), signInReq.getPassword());
-//
-//        Authentication authentication = authenticationManagerBuilder.getObject()
-//                .authenticate(authenticationToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-
-//        return ResponseEntity.ok("로그인 완료");
-//        return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
-//    }
 }

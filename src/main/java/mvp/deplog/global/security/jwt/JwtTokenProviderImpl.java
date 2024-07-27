@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
+import mvp.deplog.global.security.exception.RefreshTokenNotFoundException;
 import mvp.deplog.domain.user.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +27,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Setter(value = AccessLevel.PRIVATE)
 @Slf4j
-public class JwtProviderImpl implements JwtProvider {
+public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     //== jwt.yml에 설정된 값 가져오기 ==//
     @Value("${jwt.secret}")

@@ -8,8 +8,8 @@ import mvp.deplog.global.security.UserDetailsServiceImpl;
 import mvp.deplog.global.security.filter.JsonAuthenticationFilter;
 import mvp.deplog.global.security.filter.JwtAuthenticationProcessingFilter;
 import mvp.deplog.global.security.handler.LoginFailureHandler;
-import mvp.deplog.global.security.handler.LoginSuccessJWTProvideHandler;
-import mvp.deplog.global.security.jwt.JwtProvider;
+import mvp.deplog.global.security.handler.LoginSuccessHandler;
+import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,11 +35,11 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final String[] WHITE_LIST = {
-            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**"
+            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/auth/sign-up"
     };
 
     @Bean
@@ -55,10 +55,6 @@ public class SecurityConfig {
                 .requestMatchers(WHITE_LIST).permitAll()
                 .anyRequest().authenticated()
                 )
-
-                .logout((logout) -> logout
-                        .logoutSuccessUrl("/auth/sign-in")
-                        .invalidateHttpSession(true))
 
                 .addFilterAfter(jsonAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), JsonAuthenticationFilter.class)
@@ -82,14 +78,15 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
-        DaoAuthenticationProvider provider = daoAuthenticationProvider(); // ProviderManager(AuthenticationManager)의 AuthenticationProvider - DaoProvider 등록
+        // ProviderManager(AuthenticationManager)의 AuthenticationProvider - DaoProvider 등록 : login 시 사용
+        DaoAuthenticationProvider provider = daoAuthenticationProvider();
 //        provider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(provider);
     }
 
     @Bean
-    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler(jwtProvider, userRepository, refreshTokenRepository);
+    public LoginSuccessHandler loginSuccessHandler(){
+        return new LoginSuccessHandler(jwtTokenProvider, userRepository, refreshTokenRepository);
     }
 
     @Bean
@@ -101,13 +98,13 @@ public class SecurityConfig {
     public JsonAuthenticationFilter jsonAuthenticationFilter() throws Exception {
         JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter(objectMapper);
         jsonAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        jsonAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        jsonAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
         jsonAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler());
         return jsonAuthenticationFilter;
     }
 
     @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
-        return new JwtAuthenticationProcessingFilter(jwtProvider, userRepository, refreshTokenRepository);
+        return new JwtAuthenticationProcessingFilter(jwtTokenProvider, userRepository, refreshTokenRepository);
     }
 }

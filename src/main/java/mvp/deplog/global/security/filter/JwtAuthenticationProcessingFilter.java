@@ -9,7 +9,7 @@ import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.user.domain.User;
 import mvp.deplog.domain.user.domain.repository.UserRepository;
 import mvp.deplog.global.security.UserDetailsImpl;
-import mvp.deplog.global.security.jwt.JwtProvider;
+import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -24,7 +24,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -44,9 +44,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return; // 안 해주면 아래로 내려가서 계속 필터를 진행하게 됨
         }
 
-        String refreshToken = jwtProvider
+        String refreshToken = jwtTokenProvider
                 .extractRefreshToken(request)
-                .filter(jwtProvider::isTokenValid)
+                .filter(jwtTokenProvider::isTokenValid)
                 .orElse(null); //2
 
         if(refreshToken != null){
@@ -58,8 +58,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        jwtProvider.extractAccessToken(request).filter(jwtProvider::isTokenValid)
-                .ifPresent(accessToken -> jwtProvider.extractEmail(accessToken)
+        jwtTokenProvider.extractAccessToken(request).filter(jwtTokenProvider::isTokenValid)
+                .ifPresent(accessToken -> jwtTokenProvider.extractEmail(accessToken)
                         .ifPresent(email -> userRepository.findByEmail(email)
                                 .ifPresent(user -> saveAuthentication(user)
                                 )
@@ -82,11 +82,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         refreshTokenRepository.findByRefreshToken(refreshToken)
                         .ifPresent(findRefreshToken ->
-                                jwtProvider.sendAccessToken(response, jwtProvider.createAccessToken(findRefreshToken.getUserEmail()))
+                                jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getUserEmail()))
                         );
 
 //        userRepository.findByRefreshToken(refreshToken).ifPresent(
-//                users -> jwtProvider.sendAccessToken(response, jwtProvider.createAccessToken(users.getEmail()))
+//                users -> jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(users.getEmail()))
 //        );
 
     }

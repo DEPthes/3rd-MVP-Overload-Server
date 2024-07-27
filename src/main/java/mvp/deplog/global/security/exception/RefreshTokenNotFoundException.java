@@ -1,4 +1,4 @@
-package mvp.deplog.domain.auth.exception;
+package mvp.deplog.global.security.exception;
 
 public class RefreshTokenNotFoundException extends RuntimeException {
 
