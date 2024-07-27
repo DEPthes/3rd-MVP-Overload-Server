@@ -2,6 +2,7 @@ package mvp.deplog.global.security;
 
 import mvp.deplog.domain.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -22,7 +23,9 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> user.getRole().getKey()); // key: ROLE_권한
+//        authorities.add(() -> user.getRole().getKey()); // key: ROLE_권한
+//        authorities.add(() -> new SimpleGrantedAuthority(user.getRole().getKey())); // key: ROLE_권한
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getKey())); // key: ROLE_권한
         return authorities;
     }
 

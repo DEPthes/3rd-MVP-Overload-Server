@@ -1,12 +1,11 @@
 package mvp.deplog.domain.auth.presentation;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
-import mvp.deplog.domain.auth.dto.SignUpReq;
+import mvp.deplog.domain.auth.dto.LoginReq;
+import mvp.deplog.domain.auth.dto.JoinReq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,19 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthApi{
 
     private final AuthServiceImpl authServiceImpl;
 
-    @Operation(summary = "회원가입", description = "회원가입을 수행합니다.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "201", description = "회원가입 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
-//            @ApiResponse(responseCode = "400", description = "회원가입 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-//    })
-    @PostMapping(value = "/sign-up")
-    public ResponseEntity<?> signUp(
-            @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody SignUpReq signUpReq
-    ) {
-        return authServiceImpl.signUp(signUpReq);
+    @Override
+    @PostMapping(value = "/join")
+    public ResponseEntity<?> join(@Valid @RequestBody JoinReq joinReq) {
+        return authServiceImpl.join(joinReq);
+    }
+
+    @Override
+    @PostMapping(value = "/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginReq loginReq) {
+        return authServiceImpl.login(loginReq);
     }
 }

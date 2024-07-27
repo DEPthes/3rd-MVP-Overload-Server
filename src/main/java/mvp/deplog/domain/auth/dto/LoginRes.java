@@ -1,9 +1,11 @@
 package mvp.deplog.domain.auth.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class SignInRes {
+@Builder
+public class LoginRes {
 
     private String accessToken;
 

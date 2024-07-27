@@ -28,22 +28,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper(); //5
-
-    private final String NO_CHECK_URL = "/auth/sign-in"; //1
+    private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
     /**
      * 1. 리프레시 토큰이 오는 경우 -> 유효하면 AccessToken 재발급후, 필터 진행 X, 바로 튕기기
-     *
      * 2. 리프레시 토큰은 없고 AccessToken만 있는 경우 -> 유저정보 저장후 필터 계속 진행
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getRequestURI().equals(NO_CHECK_URL)) {
-            filterChain.doFilter(request, response);
-            return; // 안 해주면 아래로 내려가서 계속 필터를 진행하게 됨
-        }
-
         String refreshToken = jwtTokenProvider
                 .extractRefreshToken(request)
                 .filter(jwtTokenProvider::isTokenValid)
@@ -53,7 +45,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken); //3
             return;
         }
-
         checkAccessTokenAndAuthentication(request, response, filterChain);//4
     }
 
@@ -65,15 +56,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                                 )
                 )
         );
-
         filterChain.doFilter(request,response);
     }
 
     private void saveAuthentication(User user) {
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
-
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
         SecurityContext context = SecurityContextHolder.createEmptyContext();//5
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -84,10 +73,5 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                         .ifPresent(findRefreshToken ->
                                 jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getUserEmail()))
                         );
-
-//        userRepository.findByRefreshToken(refreshToken).ifPresent(
-//                users -> jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(users.getEmail()))
-//        );
-
     }
 }

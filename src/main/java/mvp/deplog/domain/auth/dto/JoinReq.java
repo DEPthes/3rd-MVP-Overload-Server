@@ -4,7 +4,7 @@ import lombok.Data;
 import mvp.deplog.domain.user.domain.Part;
 
 @Data
-public class SignUpReq {
+public class JoinReq {
 
     private String email;
 

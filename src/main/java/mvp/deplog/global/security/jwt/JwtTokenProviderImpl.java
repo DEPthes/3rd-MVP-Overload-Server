@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.global.security.exception.RefreshTokenNotFoundException;
+import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
 import mvp.deplog.domain.user.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -91,11 +91,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
                         findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
                         () -> new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken)
                 );
-
-//                .ifPresentOrElse(
-//                user -> user.updateRefreshToken(refreshToken),
-//                () -> new Exception("회원 조회 실패")
-//        );
     }
 
     @Override
@@ -105,7 +100,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
         refreshTokenRepository.findByUserEmail(email)
                 .ifPresentOrElse(
-//                        findRefreshToken -> refreshTokenRepository.delete(findRefreshToken),
                         refreshTokenRepository::delete,
                         () -> new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email)
                 );
