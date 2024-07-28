@@ -37,3 +37,4 @@ out/
 
 ### Database
 /src/main/resources/application-db.yml
+/src/main/resources/application-jwt.yml
