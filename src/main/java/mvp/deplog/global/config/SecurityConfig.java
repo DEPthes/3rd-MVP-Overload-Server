@@ -2,7 +2,7 @@ package mvp.deplog.global.config;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.user.domain.repository.UserRepository;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.UserDetailsServiceImpl;
 import mvp.deplog.global.security.filter.JwtAuthenticationProcessingFilter;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -76,6 +76,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
-        return new JwtAuthenticationProcessingFilter(jwtTokenProvider, userRepository, refreshTokenRepository);
+        return new JwtAuthenticationProcessingFilter(jwtTokenProvider, memberRepository, refreshTokenRepository);
     }
 }

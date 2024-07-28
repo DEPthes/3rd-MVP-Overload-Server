@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
-import mvp.deplog.domain.user.domain.repository.UserRepository;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     private static final String USER_ROLE_CLAIM = "role";
     private static final String BEARER = "Bearer ";
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
 
@@ -61,7 +61,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     @Override
     public String createAccessToken(String email) {
-//        userRepository.findByEmail(email)
+//        memberRepository.findByEmail(email)
 //                .ifPresent();
 
         return JWT.create()
@@ -83,7 +83,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     @Override
     public void updateRefreshToken(String email, String refreshToken) {
-        userRepository.findByEmail(email)
+        memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
         refreshTokenRepository.findByRefreshToken(refreshToken)
@@ -95,10 +95,10 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     @Override
     public void destroyRefreshToken(String email) {
-        userRepository.findByEmail(email)
+        memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
-        refreshTokenRepository.findByUserEmail(email)
+        refreshTokenRepository.findByMemberEmail(email)
                 .ifPresentOrElse(
                         refreshTokenRepository::delete,
                         () -> new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email)

@@ -1,4 +1,4 @@
-package mvp.deplog.domain.user.domain;
+package mvp.deplog.domain.member.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
