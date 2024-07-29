@@ -1,6 +1,6 @@
 package mvp.deplog.global.security;
 
-import mvp.deplog.domain.user.domain.User;
+import mvp.deplog.domain.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,33 +10,33 @@ import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final User user;
+    private final Member member;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    public UserDetailsImpl(Member member) {
+        this.member = member;
     }
 
-    public User getUser() {
-        return user;
+    public Member getMember() {
+        return member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(() -> user.getRole().getKey()); // key: ROLE_권한
-//        authorities.add(() -> new SimpleGrantedAuthority(user.getRole().getKey())); // key: ROLE_권한
-        authorities.add(new SimpleGrantedAuthority(user.getRole().getKey())); // key: ROLE_권한
+//        authorities.add(() -> member.getRole().getKey()); // key: ROLE_권한
+//        authorities.add(() -> new SimpleGrantedAuthority(member.getRole().getKey())); // key: ROLE_권한
+        authorities.add(new SimpleGrantedAuthority(member.getRole().getKey())); // key: ROLE_권한
         return authorities;
     }
 
     @Override
     public String getPassword() {
-        return this.user.getPassword();
+        return this.member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.user.getEmail();
+        return this.member.getEmail();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package mvp.deplog.domain;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import mvp.deplog.domain.user.domain.User;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,16 +24,16 @@ public class TestController {
                 "\n getCredentials : " + authentication.getCredentials() +
                 "\n HELLO !! ";
 
-//        User user = userDetails.getUser();
+//        Member member = userDetails.getMember();
 //        return "Test Success !" +
-//                "\n id : " + user.getId() +
-//                "\n username : " + user.getUsername() +
-//                "\n email : " + user.getEmail() +
-//                "\n role : " + user.getRole() +
-//                "\n part : " + user.getPart() +
-//                "\n generation : " + user.getGeneration() +
-//                "\n isVerified : " + user.getIsVerified() +
-//                "\n isApproval : " + user.getIsApproval() +
+//                "\n id : " + member.getId() +
+//                "\n name : " + member.getName() +
+//                "\n email : " + member.getEmail() +
+//                "\n role : " + member.getRole() +
+//                "\n part : " + member.getPart() +
+//                "\n generation : " + member.getGeneration() +
+//                "\n isVerified : " + member.getIsVerified() +
+//                "\n isApproval : " + member.getIsApproval() +
 //                "\n HELLO !! "
 //                ;
 

@@ -16,8 +16,8 @@ import mvp.deplog.domain.common.BaseEntity;
 public class RefreshToken extends BaseEntity {
 
     @Id
-    @Column(name = "user_email" ,nullable = false)
-    private String userEmail;
+    @Column(name = "member_email" ,nullable = false)
+    private String memberEmail;
 
     @Lob
     @Column(name = "refresh_token", nullable = false)
@@ -29,8 +29,8 @@ public class RefreshToken extends BaseEntity {
     }
 
     @Builder
-    public RefreshToken(String userEmail, String refreshToken) {
-        this.userEmail = userEmail;
+    public RefreshToken(String memberEmail, String refreshToken) {
+        this.memberEmail = memberEmail;
         this.refreshToken = refreshToken;
     }
 }

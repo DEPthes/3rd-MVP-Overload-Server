@@ -6,8 +6,8 @@ import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.dto.LoginReq;
 import mvp.deplog.domain.auth.dto.LoginRes;
 import mvp.deplog.domain.auth.dto.JoinReq;
-import mvp.deplog.domain.user.domain.User;
-import mvp.deplog.domain.user.domain.repository.UserRepository;
+import mvp.deplog.domain.member.domain.Member;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService{
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -34,15 +34,15 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public ResponseEntity<?> join(JoinReq joinReq) {
-        User user = User.builder()
+        Member member = Member.builder()
                 .email(joinReq.getEmail())
                 .password(passwordEncoder.encode(joinReq.getPassword()))
-                .username(joinReq.getUsername())
+                .name(joinReq.getName())
                 .part(joinReq.getPart())
                 .generation(joinReq.getGeneration())
                 .build();
 
-        userRepository.save(user);
+        memberRepository.save(member);
         return ResponseEntity.ok("회원가입 완료");
     }
 
@@ -61,22 +61,22 @@ public class AuthServiceImpl implements AuthService{
         String accessToken = jwtTokenProvider.createAccessToken(email);
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
-        userRepository.findByEmail(email)
+        memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
-        refreshTokenRepository.findByUserEmail(email)
+        refreshTokenRepository.findByMemberEmail(email)
                 .ifPresentOrElse(
                         findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
                         () -> refreshTokenRepository.save(
                                 RefreshToken.builder()
-                                        .userEmail(loginReq.getEmail())
+                                        .memberEmail(loginReq.getEmail())
                                         .refreshToken(refreshToken)
                                         .build()
                         )
                 );
 
         refreshTokenRepository.save(RefreshToken.builder()
-                .userEmail(loginReq.getEmail())
+                .memberEmail(loginReq.getEmail())
                 .refreshToken(refreshToken)
                 .build()
         );

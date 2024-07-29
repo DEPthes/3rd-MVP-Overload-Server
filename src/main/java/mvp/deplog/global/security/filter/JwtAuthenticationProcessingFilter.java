@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.user.domain.User;
-import mvp.deplog.domain.user.domain.repository.UserRepository;
+import mvp.deplog.domain.member.domain.Member;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.UserDetailsImpl;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ import java.io.IOException;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
@@ -51,16 +51,16 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         jwtTokenProvider.extractAccessToken(request).filter(jwtTokenProvider::isTokenValid)
                 .ifPresent(accessToken -> jwtTokenProvider.extractEmail(accessToken)
-                        .ifPresent(email -> userRepository.findByEmail(email)
-                                .ifPresent(user -> saveAuthentication(user)
+                        .ifPresent(email -> memberRepository.findByEmail(email)
+                                .ifPresent(member -> saveAuthentication(member)
                                 )
                 )
         );
         filterChain.doFilter(request,response);
     }
 
-    private void saveAuthentication(User user) {
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+    private void saveAuthentication(Member member) {
+        UserDetailsImpl userDetails = new UserDetailsImpl(member);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
         SecurityContext context = SecurityContextHolder.createEmptyContext();//5
@@ -71,7 +71,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         refreshTokenRepository.findByRefreshToken(refreshToken)
                         .ifPresent(findRefreshToken ->
-                                jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getUserEmail()))
+                                jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getMemberEmail()))
                         );
     }
 }
