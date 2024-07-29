@@ -20,7 +20,7 @@ public class Comment extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
+    @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
     @ManyToOne(fetch = FetchType.LAZY)

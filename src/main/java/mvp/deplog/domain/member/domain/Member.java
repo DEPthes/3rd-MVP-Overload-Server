@@ -38,6 +38,9 @@ public class Member extends BaseEntity {
     @Column(name = "generation", nullable = false)
     private int generation;
 
+    @Column(name = "avatar_image")
+    private String avatarImage;
+
     @Builder
     public Member(String email, String password, String name, int generation, Part part) {
         this.email = email;
@@ -46,5 +49,6 @@ public class Member extends BaseEntity {
         this.role = Role.MEMBER;
         this.generation = generation;
         this.part = part;
+        this.avatarImage = null;
     }
 }
