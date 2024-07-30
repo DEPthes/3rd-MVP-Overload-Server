@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import mvp.deplog.domain.auth.dto.LoginReq;
 import mvp.deplog.domain.auth.dto.JoinReq;
 import mvp.deplog.domain.auth.dto.LoginRes;
-import mvp.deplog.domain.common.dto.Message;
+import mvp.deplog.global.common.Message;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;

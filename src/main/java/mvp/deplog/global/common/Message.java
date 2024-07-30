@@ -1,4 +1,4 @@
-package mvp.deplog.domain.common.dto;
+package mvp.deplog.global.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

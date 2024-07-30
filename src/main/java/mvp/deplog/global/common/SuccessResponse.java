@@ -1,18 +1,16 @@
-package mvp.deplog.domain.common.dto;
+package mvp.deplog.global.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
 @Schema(description = "성공 Response")
 public class SuccessResponse<T> {
 
