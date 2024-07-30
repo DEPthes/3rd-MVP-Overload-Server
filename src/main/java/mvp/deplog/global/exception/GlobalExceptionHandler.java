@@ -3,6 +3,7 @@ package mvp.deplog.global.exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonParseException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -89,7 +90,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleNoHandlerFoundExceptionException(NoHandlerFoundException e) {
         log.error("handleNoHandlerFoundExceptionException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_ERROR, e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
 
@@ -103,10 +104,18 @@ public class GlobalExceptionHandler {
 
     // [Exception] 인증 에러가 발생한 경우
     @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+    protected ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
         log.error("handleAuthenticationException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.NETWORK_AUTHENTICATION_REQUIRED, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
+    }
+
+    // [Exception] 데이터 무결성을 위반한 경우
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("handleDataIntegrityViolationException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.CONFLICT, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     // Input / Output 내에서 발생한 경우

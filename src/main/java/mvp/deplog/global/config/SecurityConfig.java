@@ -3,6 +3,7 @@ package mvp.deplog.global.config;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.global.security.AuthenticationEntryPointImpl;
 import mvp.deplog.global.security.UserDetailsServiceImpl;
 import mvp.deplog.global.security.filter.JwtAuthenticationProcessingFilter;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
@@ -45,6 +46,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
 
                 .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(WHITE_LIST).permitAll()
