@@ -35,6 +35,9 @@ jobs:
         run: |
           touch ./src/main/resources/application-db.yml
           echo "${{ secrets.DATABASE_YML }}" >> src/main/resources/application-db.yml
+          
+          touch ./src/main/resources/application-jwt.yml
+          echo "${{ secrets.JWT_YML }}" >> src/main/resources/application-jwt.yml
 
       # 빌드 권한 부여
       - name: Grant execute permission for gradlew
@@ -42,7 +45,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+        uses: gradle/gradle-build-action@2.4.2
         with:
           arguments: clean build -x test
 
