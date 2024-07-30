@@ -1,6 +1,7 @@
 package mvp.deplog.domain.comment.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,6 @@ public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,13 +27,14 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "depth", nullable = false)
+    @Column(name = "depth", columnDefinition = "INT", nullable = false)
+    @Min(value = 1)
     private int depth;
 
     @Builder(builderMethodName = "commentBuilder")
