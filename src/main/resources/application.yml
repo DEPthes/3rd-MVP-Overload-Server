@@ -2,3 +2,6 @@ spring:
   profiles:
     active: ["db", "jwt", "swagger"]
 
+  web:
+    resources:
+      add-mappings: false

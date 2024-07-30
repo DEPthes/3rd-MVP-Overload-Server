@@ -12,12 +12,13 @@ import mvp.deplog.domain.post.domain.Post;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@Table(name = "scrap")
+@Table(name = "scrap", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"member_id", "post_id"})
+})
 public class Scrap extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "scrap_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

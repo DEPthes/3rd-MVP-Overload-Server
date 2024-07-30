@@ -1,6 +1,7 @@
 package mvp.deplog.domain.post.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,6 @@ public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,12 +27,15 @@ public class Post extends BaseEntity {
     private String title;
 
     @Column(name = "like_count")
+    @Min(value = 0)
     private Integer likeCount;
 
     @Column(name = "scrap_count")
+    @Min(value = 0)
     private Integer scrapCount;
 
     @Column(name = "view_count")
+    @Min(value = 0)
     private Integer viewCount;
 
     @Enumerated(EnumType.STRING)
