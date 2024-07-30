@@ -10,7 +10,7 @@ public class PostReq {
 
     private String title;
 
-    private List<BlockReq> blocks;
+    private List<BlockReq> blockList;
 
-    private List<String> tags;
+    private List<String> tagNameList;
 }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/posts")
 public class PostController {
 
-    @Autowired
     private final PostService postService;
 
     @PostMapping

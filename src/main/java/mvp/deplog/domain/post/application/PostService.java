@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -37,7 +38,7 @@ public class PostService {
         postRepository.save(post);
 
         // 블록 저장
-        for (BlockReq blockReq : postReq.getBlocks()) {
+        for (BlockReq blockReq : postReq.getBlockList()) {
             Block block = Block.builder()
                     .post(post)
                     .content(blockReq.getContent())
@@ -48,7 +49,7 @@ public class PostService {
         }
 
         // 태그 저장 & Tagging 엔티티 연결
-        for(String tagName : postReq.getTags()) {
+        for(String tagName : postReq.getTagNameList()) {
             Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
 
