@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import mvp.deplog.domain.auth.dto.LoginReq;
 import mvp.deplog.domain.auth.dto.JoinReq;
 import mvp.deplog.domain.auth.dto.LoginRes;
+import mvp.deplog.domain.common.dto.Message;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface AuthApi {
 
     @Operation(summary = "회원 가입 API", description = "회원 가입을 진행합니다.")
-//            security = @SecurityRequirement(name = "Bearer Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "회원가입 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "201", description = "회원가입 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
             @ApiResponse(responseCode = "400", description = "회원가입 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/join")
@@ -32,7 +32,7 @@ public interface AuthApi {
 
     @Operation(summary = "로그인 API", description = "로그인을 진행합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "로그인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LoginRes.class))}),
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LoginRes.class))}),
             @ApiResponse(responseCode = "400", description = "로그인 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/login")

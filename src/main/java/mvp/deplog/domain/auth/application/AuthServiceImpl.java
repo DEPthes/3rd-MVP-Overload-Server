@@ -6,9 +6,12 @@ import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.dto.LoginReq;
 import mvp.deplog.domain.auth.dto.LoginRes;
 import mvp.deplog.domain.auth.dto.JoinReq;
+import mvp.deplog.domain.common.dto.Message;
+import mvp.deplog.domain.common.dto.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +36,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     @Transactional
-    public ResponseEntity<?> join(JoinReq joinReq) {
+    public SuccessResponse<Message> join(JoinReq joinReq) {
         Member member = Member.builder()
                 .email(joinReq.getEmail())
                 .password(passwordEncoder.encode(joinReq.getPassword()))
@@ -43,12 +46,17 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         memberRepository.save(member);
-        return ResponseEntity.ok("회원가입 완료");
+
+        Message message = Message.builder()
+                .message("회원 가입이 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> login(LoginReq loginReq) {
+    public SuccessResponse<LoginRes> login(LoginReq loginReq) {
         String email = loginReq.getEmail();
         String password = loginReq.getPassword();
 
@@ -86,6 +94,10 @@ public class AuthServiceImpl implements AuthService{
                 .refreshToken(refreshToken)
                 .build();
 
-        return ResponseEntity.ok(loginRes);
+        return SuccessResponse.of(loginRes);
+
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(loginRes);
     }
 }

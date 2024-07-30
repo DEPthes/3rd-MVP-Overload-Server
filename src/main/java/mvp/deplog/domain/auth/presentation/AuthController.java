@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
 import mvp.deplog.domain.auth.dto.LoginReq;
 import mvp.deplog.domain.auth.dto.JoinReq;
+import mvp.deplog.domain.auth.dto.LoginRes;
+import mvp.deplog.domain.common.dto.Message;
+import mvp.deplog.domain.common.dto.SuccessResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth API", description = "Authorization 관련 API입니다.")
 @RequiredArgsConstructor
@@ -22,13 +23,15 @@ public class AuthController implements AuthApi{
 
     @Override
     @PostMapping(value = "/join")
-    public ResponseEntity<?> join(@Valid @RequestBody JoinReq joinReq) {
-        return authServiceImpl.join(joinReq);
+    public ResponseEntity<SuccessResponse<Message>> join(@Valid @RequestBody JoinReq joinReq) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(authServiceImpl.join(joinReq));
     }
 
     @Override
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginReq loginReq) {
-        return authServiceImpl.login(loginReq);
+    public ResponseEntity<SuccessResponse<LoginRes>> login(@Valid @RequestBody LoginReq loginReq) {
+        return ResponseEntity.ok(authServiceImpl.login(loginReq));
     }
 }
