@@ -5,15 +5,14 @@ import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
-import mvp.deplog.domain.post.dto.CreatePostRes;
-import mvp.deplog.domain.post.dto.PostReq;
+import mvp.deplog.domain.post.dto.response.CreatePostRes;
+import mvp.deplog.domain.post.dto.request.PostReq;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
 import mvp.deplog.domain.tagging.repository.TaggingRepository;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.MarkdownUtil;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

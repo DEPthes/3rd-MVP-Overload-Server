@@ -1,4 +1,4 @@
-package mvp.deplog.domain.post.dto;
+package mvp.deplog.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

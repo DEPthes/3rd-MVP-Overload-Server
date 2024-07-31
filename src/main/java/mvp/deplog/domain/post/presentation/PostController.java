@@ -2,12 +2,10 @@ package mvp.deplog.domain.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.post.application.PostService;
-import mvp.deplog.domain.post.domain.Post;
-import mvp.deplog.domain.post.dto.CreatePostRes;
-import mvp.deplog.domain.post.dto.PostReq;
+import mvp.deplog.domain.post.dto.response.CreatePostRes;
+import mvp.deplog.domain.post.dto.request.PostReq;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
