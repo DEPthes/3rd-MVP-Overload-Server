@@ -1,6 +1,7 @@
 package mvp.deplog.domain.block.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,20 +17,20 @@ public class Block extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "block_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content; // 내용 or 이미지 url
 
-    @Column(name = "sequence", nullable = false)
+    @Column(name = "sequence", columnDefinition = "INT", nullable = false)
+    @Min(value = 1)
     private int sequence;
 
-    @Column(name = "is_Image", nullable = false)
+    @Column(name = "is_image", nullable = false)
     private boolean isImage;
 
     @Builder

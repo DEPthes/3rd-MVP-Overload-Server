@@ -1,6 +1,7 @@
 package mvp.deplog.domain.member.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,6 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", updatable = false)
     private Long id;
 
     @Column(name = "email", unique = true, nullable = false)
@@ -35,10 +35,11 @@ public class Member extends BaseEntity {
     @Column(name = "part", nullable = false)
     private Part part;
 
-    @Column(name = "generation", nullable = false)
+    @Column(name = "generation", columnDefinition = "TINYINT", nullable = false)
+    @Min(value = 1)
     private int generation;
 
-    @Column(name = "avatar_image")
+    @Column(name = "avatar_image", columnDefinition = "TEXT")
     private String avatarImage;
 
     @Builder
