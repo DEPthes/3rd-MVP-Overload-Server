@@ -5,14 +5,20 @@ import mvp.deplog.domain.block.domain.Block;
 import mvp.deplog.domain.block.domain.repository.BlockRepository;
 import mvp.deplog.domain.block.dto.BlockReq;
 import mvp.deplog.domain.member.domain.Member;
+import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.post.dto.PostListRes;
 import mvp.deplog.domain.post.dto.PostReq;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
 import mvp.deplog.domain.tagging.repository.TaggingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +67,24 @@ public class PostService {
         }
 
         return ResponseEntity.ok("게시글 작성 완료");
+    }
+
+    public Page<PostListRes> getPostByPart(Part part, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<Post> postList;
+
+        if(part == null) {
+            postList = postRepository.findAll(pageable);
+        }
+        else {
+            postList = postRepository.findByPart(part, pageable);
+        }
+
+        return postList.map(this::convertToDTO);
+    }
+    private PostListRes convertToDTO(Post post) {
+        String preview = null;
+        String image = null;
+        for(Block block : )
     }
 }
