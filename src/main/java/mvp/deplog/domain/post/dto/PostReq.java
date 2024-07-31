@@ -1,7 +1,6 @@
 package mvp.deplog.domain.post.dto;
 
 import lombok.Data;
-import mvp.deplog.domain.block.dto.BlockReq;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ public class PostReq {
 
     private String title;
 
-    private List<BlockReq> blockList;
+    private String content;
 
     private List<String> tagNameList;
 }

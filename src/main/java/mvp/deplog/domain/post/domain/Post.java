@@ -26,6 +26,15 @@ public class Post extends BaseEntity {
     @Column(name = "title") // null 가능 - 임시 저장
     private String title;
 
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
+
+    @Column(name = "preview_content")
+    private String preview_content;
+
+    @Column(name = "preview_image", columnDefinition = "TEXT")
+    private String preview_image;
+
     @Column(name = "like_count")
     @Min(value = 0)
     private Integer likeCount;
@@ -43,9 +52,12 @@ public class Post extends BaseEntity {
     private Stage stage;
 
     @Builder
-    public Post(Member member, String title, Stage stage) {
+    public Post(Member member, String content, String preview_content, String preview_image, String title, Stage stage) {
         this.member = member;
         this.title = title;
+        this.content = content;
+        this.preview_content = preview_content;
+        this.preview_image = preview_image;
         this.likeCount = 0;
         this.scrapCount = 0;
         this.viewCount = 0;
