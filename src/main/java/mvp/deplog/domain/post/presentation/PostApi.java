@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import mvp.deplog.domain.post.dto.CreatePostRes;
 import mvp.deplog.domain.post.dto.PostReq;
 import mvp.deplog.global.common.Message;
+import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,7 @@ public interface PostApi {
             )
     })
     @PostMapping(value = "/join")
-    ResponseEntity<String> createPost(
+    ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody PostReq postReq
     );

@@ -5,6 +5,7 @@ import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.post.dto.CreatePostRes;
 import mvp.deplog.domain.post.dto.PostReq;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
@@ -26,7 +27,7 @@ public class PostService {
     private final TaggingRepository taggingRepository;
 
     @Transactional
-    public ResponseEntity<String> createPost(PostReq postReq, Member member) {
+    public SuccessResponse<CreatePostRes> createPost(Member member, PostReq postReq) {
 
         String content = postReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
@@ -41,7 +42,7 @@ public class PostService {
                 .stage(Stage.PUBLISHED)
                 .build();
         // 게시글 저장
-        postRepository.save(post);
+        Post savePost = postRepository.save(post);
 
         // 태그 저장 & Tagging 엔티티 연결
         for(String tagName : postReq.getTagNameList()) {
@@ -56,6 +57,10 @@ public class PostService {
             taggingRepository.save(tagging);
         }
 
-        return ResponseEntity.ok("게시글 작성 완료");
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(savePost.getId())
+                .build();
+
+        return SuccessResponse.of(createPostRes);
     }
 }

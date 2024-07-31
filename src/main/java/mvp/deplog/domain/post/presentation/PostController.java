@@ -2,9 +2,13 @@ package mvp.deplog.domain.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.post.application.PostService;
+import mvp.deplog.domain.post.domain.Post;
+import mvp.deplog.domain.post.dto.CreatePostRes;
 import mvp.deplog.domain.post.dto.PostReq;
+import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +25,9 @@ public class PostController implements PostApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<String> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostReq postReq) {
-        return postService.createPost(postReq, userDetails.getMember());
+    public ResponseEntity<SuccessResponse<CreatePostRes>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostReq postReq) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(postService.createPost(userDetails.getMember(), postReq));
     }
 }
