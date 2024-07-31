@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
-public class PostController {
+public class PostController implements PostApi {
 
     private final PostService postService;
 
+    @Override
     @PostMapping
-    public ResponseEntity<String> createPost(@RequestBody PostReq postReq, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<String> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostReq postReq) {
         return postService.createPost(postReq, userDetails.getMember());
     }
 }

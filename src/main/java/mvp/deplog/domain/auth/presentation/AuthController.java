@@ -1,6 +1,5 @@
 package mvp.deplog.domain.auth.presentation;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Auth API", description = "Authorization 관련 API입니다.")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
