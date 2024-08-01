@@ -23,7 +23,7 @@ public interface CommentApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201", description = "댓글 작성 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateCommentRes.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "댓글 작성 실패",
