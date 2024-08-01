@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.RefreshToken;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.global.common.Message;
@@ -93,5 +94,14 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         return SuccessResponse.of(loginRes);
+    }
+
+    @Override
+    public SuccessResponse<EmailDuplicateCheckRes> checkEmailDuplicate(String email) {
+        EmailDuplicateCheckRes emailDuplicateCheckRes = EmailDuplicateCheckRes.builder()
+                .availability(!memberRepository.existsByEmail(email))
+                .build();
+
+        return SuccessResponse.of(emailDuplicateCheckRes);
     }
 }
