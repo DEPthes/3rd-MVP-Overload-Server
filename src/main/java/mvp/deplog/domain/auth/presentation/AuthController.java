@@ -1,19 +1,17 @@
 package mvp.deplog.domain.auth.presentation;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
-import mvp.deplog.domain.auth.dto.LoginReq;
-import mvp.deplog.domain.auth.dto.JoinReq;
-import mvp.deplog.domain.auth.dto.LoginRes;
+import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.request.JoinReq;
+import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Auth API", description = "Authorization 관련 API입니다.")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")

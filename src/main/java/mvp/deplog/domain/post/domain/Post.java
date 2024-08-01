@@ -30,10 +30,10 @@ public class Post extends BaseEntity {
     private String content;
 
     @Column(name = "preview_content")
-    private String preview_content;
+    private String previewContent;
 
     @Column(name = "preview_image", columnDefinition = "TEXT")
-    private String preview_image;
+    private String previewImage;
 
     @Column(name = "like_count")
     @Min(value = 0)
@@ -52,12 +52,12 @@ public class Post extends BaseEntity {
     private Stage stage;
 
     @Builder
-    public Post(Member member, String content, String preview_content, String preview_image, String title, Stage stage) {
+    public Post(Member member, String content, String previewContent, String previewImage, String title, Stage stage) {
         this.member = member;
         this.title = title;
         this.content = content;
-        this.preview_content = preview_content;
-        this.preview_image = preview_image;
+        this.previewContent = previewContent;
+        this.previewImage = previewImage;
         this.likeCount = 0;
         this.scrapCount = 0;
         this.viewCount = 0;

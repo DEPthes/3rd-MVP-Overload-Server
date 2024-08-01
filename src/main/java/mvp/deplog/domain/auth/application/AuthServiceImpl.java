@@ -3,9 +3,9 @@ package mvp.deplog.domain.auth.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.RefreshToken;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.auth.dto.LoginReq;
-import mvp.deplog.domain.auth.dto.LoginRes;
-import mvp.deplog.domain.auth.dto.JoinReq;
+import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.response.LoginRes;
+import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
@@ -93,9 +93,5 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         return SuccessResponse.of(loginRes);
-
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(loginRes);
     }
 }
