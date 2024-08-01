@@ -3,7 +3,7 @@ package mvp.deplog.domain.comment.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.domain.Comment;
 import mvp.deplog.domain.comment.domain.repository.CommentRepository;
-import mvp.deplog.domain.comment.dto.CommentReq;
+import mvp.deplog.domain.comment.dto.request.CommentReq;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import org.springframework.stereotype.Service;

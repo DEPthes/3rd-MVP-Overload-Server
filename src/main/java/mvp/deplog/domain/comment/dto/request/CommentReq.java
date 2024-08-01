@@ -1,4 +1,4 @@
-package mvp.deplog.domain.comment.dto;
+package mvp.deplog.domain.comment.dto.request;
 
 import lombok.Data;
 

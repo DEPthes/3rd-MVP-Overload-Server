@@ -2,7 +2,7 @@ package mvp.deplog.domain.comment.presentation;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.application.CommentService;
-import mvp.deplog.domain.comment.dto.CommentReq;
+import mvp.deplog.domain.comment.dto.request.CommentReq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
