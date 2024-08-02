@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Email Verification</title>
+</head>
+<body>
+<div style="margin:100px;">
+    <h1> 안녕하세요.</h1>
+    <h1> DEPlog입니다.</h1>
+    <br>
+    <p> 인증을 완료하려면 아래 버튼을 클릭해주세요:</p>
+    <br>
+    <div align="center" style="border:1px solid black; font-family:verdana;">
+        <p>인증을 완료하려면 아래 링크를 클릭해주세요:</p>
+        <p><a th:href="@{http://localhost:8080/mails/verify(code=${code})}">이메일 인증하기</a></p>
+    </div>
+    <br/>
+</div>
+</body>
+</html>

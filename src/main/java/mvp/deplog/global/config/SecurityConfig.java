@@ -35,7 +35,7 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final String[] WHITE_LIST = {
-            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/test"
+            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/test", "/mails/**"
     };
 
     @Bean
