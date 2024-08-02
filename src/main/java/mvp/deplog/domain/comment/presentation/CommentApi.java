@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.comment.dto.request.CommentReq;
-import mvp.deplog.domain.comment.dto.response.CreateCommentRes;
+import mvp.deplog.domain.comment.dto.response.CommentRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
@@ -23,7 +23,7 @@ public interface CommentApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201", description = "댓글 작성 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreateCommentRes.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CommentRes.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "댓글 작성 실패",
@@ -31,6 +31,6 @@ public interface CommentApi {
             )
     })
     @PostMapping
-    ResponseEntity<SuccessResponse<CreateCommentRes>> createComment(
+    ResponseEntity<SuccessResponse<Message>> createComment(
             @Parameter(description = "Schemas의 CommentReq를 참고해주세요.", required = true) @RequestBody CommentReq commentReq);
 }

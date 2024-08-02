@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.domain.Comment;
 import mvp.deplog.domain.comment.domain.repository.CommentRepository;
 import mvp.deplog.domain.comment.dto.request.CommentReq;
-import mvp.deplog.domain.comment.dto.response.CreateCommentRes;
+import mvp.deplog.domain.comment.dto.response.CommentRes;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Service
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
     @Transactional
-    public SuccessResponse<CreateCommentRes> createComment(CommentReq commentReq) {
-        Post post = postRepository.findById(commentReq.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음 예외처리"));
+    public SuccessResponse<Message> createComment(CommentReq commentReq) {
+        Long postId = commentReq.getPostId();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 게시글을 찾을 수 없습니다: " + postId));
 
         Comment comment;
         if(commentReq.getParentCommentId() == null){
@@ -32,8 +35,9 @@ public class CommentService {
                     .build();
         }
         else{
-            Comment parentComment = commentRepository.findById(commentReq.getParentCommentId())
-                    .orElseThrow(() -> new IllegalArgumentException("허용되지 않은 부모 댓글 예외처리"));
+            Long parentCommentId = commentReq.getParentCommentId();
+            Comment parentComment = commentRepository.findById(parentCommentId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 부모 댓글을 찾을 수 없습니다: " + parentCommentId));
             comment = Comment.replyBuilder()
                     .post(post)
                     .parentComment(parentComment)
@@ -42,14 +46,13 @@ public class CommentService {
                     .build();
         }
 
-
         // 댓글 저장
         Comment saveComment = commentRepository.save(comment);
 
-        CreateCommentRes createCommentRes = CreateCommentRes.builder()
-                .commentId(saveComment.getId())
+        Message message = Message.builder()
+                .message("댓글 작성이 완료되었습니다.")
                 .build();
 
-        return SuccessResponse.of(createCommentRes);
+        return SuccessResponse.of(message);
     }
 }
