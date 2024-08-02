@@ -3,6 +3,7 @@ package mvp.deplog.infrastructure.mail;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.redis.RedisUtil;
@@ -31,10 +32,13 @@ public class MailService {
     private final SpringTemplateEngine templateEngine;
     private final RedisUtil redisUtil;
 
-    public SuccessResponse<MailCodeRes> sendMail(String email) throws Exception {
-        String code = generateCode();
+    private final MemberRepository memberRepository;
 
-        redisUtil.setDataExpire(code, String.valueOf(false), 60 * 3L);
+    public SuccessResponse<MailCodeRes> sendMail(String email) throws Exception {
+        if (memberRepository.existsByEmail(email))
+            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+        String code = generateCode();
+        redisUtil.setDataExpire(code, email, 60 * 3L);
 
         MimeMessage mimeMessage = createMessage(code, email);
         mailSender.send(mimeMessage);
@@ -47,11 +51,11 @@ public class MailService {
     }
 
     public SuccessResponse<Message> verifyCode(String code) {
-        String data = redisUtil.getData(code);
-        if (data == null)
+        String email = redisUtil.getData(code);
+        if (email == null)
             throw new IllegalArgumentException("유효하지 않은 코드입니다.");
-
-        redisUtil.setDataExpire(code, String.valueOf(true), 60 * 60L);
+        redisUtil.deleteData(code);
+        redisUtil.setDataExpire(email + "_verify", String.valueOf(true), 60 * 60L);
 
         Message message = Message.builder()
                 .message("이메일 인증이 완료되었습니다.")
@@ -84,7 +88,7 @@ public class MailService {
     }
 
     // 타임리프를 이용한 context 설정
-    public String setContext(String code) {
+    private String setContext(String code) {
         Context context = new Context();
         context.setVariable("code", code);
         return templateEngine.process("verification-email", context); // verification-email.html
