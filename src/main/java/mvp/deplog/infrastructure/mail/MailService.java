@@ -5,8 +5,8 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
+import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,9 +29,13 @@ public class MailService {
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final RedisUtil redisUtil;
 
     public SuccessResponse<MailCodeRes> sendMail(String email) throws Exception {
         String code = generateCode();
+
+        redisUtil.setDataExpire(code, String.valueOf(false), 60 * 3L);
+
         MimeMessage mimeMessage = createMessage(code, email);
         mailSender.send(mimeMessage);
 
@@ -42,6 +46,21 @@ public class MailService {
         return SuccessResponse.of(mailCodeRes);
     }
 
+    public SuccessResponse<Message> verifyCode(String code) {
+        String data = redisUtil.getData(code);
+        if (data == null)
+            throw new IllegalArgumentException("유효하지 않은 코드입니다.");
+
+        redisUtil.setDataExpire(code, String.valueOf(true), 60 * 60L);
+
+        Message message = Message.builder()
+                .message("이메일 인증이 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
+
+    // [Utils]
     private MimeMessage createMessage(String code, String email) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -52,7 +71,6 @@ public class MailService {
 
         return mimeMessage;
     }
-
 
     // Description : 코드 생성 함수 (00000000 ~ zzzzzzzz) (8자리)
     private String generateCode() {
