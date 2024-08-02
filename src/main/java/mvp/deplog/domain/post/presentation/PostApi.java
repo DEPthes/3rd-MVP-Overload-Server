@@ -32,7 +32,7 @@ public interface PostApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @PostMapping(value = "/join")
+    @PostMapping
     ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody PostReq postReq
