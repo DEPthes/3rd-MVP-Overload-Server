@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 @Slf4j
 @RestControllerAdvice
@@ -75,7 +77,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-
     // [Exception] 잘못된 서버 요청일 경우 발생한 경우
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(HttpClientErrorException e) {
@@ -84,7 +85,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-
     // [Exception] 잘못된 주소로 요청 한 경우
     @ExceptionHandler(NoHandlerFoundException.class)
     protected ResponseEntity<ErrorResponse> handleNoHandlerFoundExceptionException(NoHandlerFoundException e) {
@@ -92,7 +92,6 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_ERROR, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
 
     // [Exception] NULL 값이 발생한 경우
     @ExceptionHandler(NullPointerException.class)
@@ -122,10 +121,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
         log.error("handleIOException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.IO_ERROR, ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 
+        // 요청한 파일을 찾을 수 없거나  잘못된 URL 형식이 사용되었을 경우 400
+        HttpStatus status;
+        if (ex instanceof FileNotFoundException || ex instanceof MalformedURLException) {
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.IO_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, status);
+    }
 
     // com.google.gson 내에 Exception 발생하는 경우
     @ExceptionHandler(JsonParseException.class)
@@ -143,6 +149,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    // [Exception] 메소드에 전달된 인수가 유효하지 않은 경우
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("handleIllegalArgumentException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    // [Exception] 배열의 잘못된 인덱스에 접근할 경우
+    @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
+    protected ResponseEntity<ErrorResponse> handleArrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException ex) {
+        log.error("handleArrayIndexOutOfBoundsException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     // [Exception] 모든 Exception 경우 발생
     @ExceptionHandler(Exception.class)
