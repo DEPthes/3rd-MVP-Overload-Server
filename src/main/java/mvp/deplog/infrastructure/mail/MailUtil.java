@@ -22,6 +22,12 @@ public class MailUtil {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${example.verify.url}")
+    private String verificationUrl;
+
+    @Value("${example.verify.verification.email}")
+    private String templateUrl;
+
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
@@ -51,6 +57,7 @@ public class MailUtil {
     public String setContext(String code) {
         Context context = new Context();
         context.setVariable("code", code);
-        return templateEngine.process("verification-email", context); // verification-email.html
+        context.setVariable("verificationUrl", verificationUrl);
+        return templateEngine.process(templateUrl, context);
     }
 }

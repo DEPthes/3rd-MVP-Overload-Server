@@ -1,12 +1,14 @@
 package mvp.deplog.infrastructure.mail.presentation;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.mail.dto.MailCodeRes;
 import mvp.deplog.infrastructure.mail.application.MailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,7 +25,9 @@ public class MailController implements MailApi {
 
     @Override
     @GetMapping(value = "/verify")
-    public ResponseEntity<SuccessResponse<Message>> verify(@RequestParam String code) {
-        return ResponseEntity.ok(mailService.verifyCode(code));
+    public void verify(@RequestParam String code, HttpServletResponse response) throws IOException {
+        mailService.verifyCode(code);
+        String redirect_uri = "http://www.naver.com";
+        response.sendRedirect(redirect_uri);
     }
 }

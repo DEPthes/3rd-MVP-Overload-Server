@@ -12,7 +12,7 @@
     <br>
     <div align="center" style="border:1px solid black; font-family:verdana;">
         <p>인증을 완료하려면 아래 링크를 클릭해주세요:</p>
-        <p><a th:href="@{http://localhost:8080/mails/verify(code=${code})}">이메일 인증하기</a></p>
+        <p><a th:href="@{${verificationUrl}(code=${code})}">이메일 인증하기</a></p>
     </div>
     <br/>
 </div>

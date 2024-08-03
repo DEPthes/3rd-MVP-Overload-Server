@@ -3,7 +3,6 @@ package mvp.deplog.infrastructure.mail.application;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
-import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.mail.dto.MailCodeRes;
 import mvp.deplog.infrastructure.mail.MailUtil;
@@ -17,6 +16,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Transactional(readOnly = true)
 @Service
 public class MailService {
+
+    private final String VERIFY_SUFFIX = "_verify";
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
@@ -41,17 +42,17 @@ public class MailService {
         return SuccessResponse.of(mailCodeRes);
     }
 
-    public SuccessResponse<Message> verifyCode(String code) {
+    public void verifyCode(String code) {
         String email = redisUtil.getData(code);
         if (email == null)
             throw new IllegalArgumentException("유효하지 않은 코드입니다.");
         redisUtil.deleteData(code);
-        redisUtil.setDataExpire(email + "_verify", String.valueOf(true), 60 * 60L);
+        redisUtil.setDataExpire(email + VERIFY_SUFFIX, String.valueOf(true), 60 * 60L);
 
-        Message message = Message.builder()
-                .message("이메일 인증이 완료되었습니다.")
-                .build();
-
-        return SuccessResponse.of(message);
+//        Message message = Message.builder()
+//                .message("이메일 인증이 완료되었습니다.")
+//                .build();
+//
+//        return SuccessResponse.of(message);
     }
 }
