@@ -1,4 +1,4 @@
-package mvp.deplog.infrastructure;
+package mvp.deplog.infrastructure.markdown;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
