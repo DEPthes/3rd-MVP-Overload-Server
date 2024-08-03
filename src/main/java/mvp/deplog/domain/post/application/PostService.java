@@ -12,7 +12,7 @@ import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
 import mvp.deplog.domain.tagging.repository.TaggingRepository;
 import mvp.deplog.global.common.SuccessResponse;
-import mvp.deplog.infrastructure.MarkdownUtil;
+import mvp.deplog.infrastructure.markdown.MarkdownUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

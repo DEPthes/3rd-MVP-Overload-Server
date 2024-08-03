@@ -153,7 +153,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("handleIllegalArgumentException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, ex.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -161,7 +161,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
     protected ResponseEntity<ErrorResponse> handleArrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException ex) {
         log.error("handleArrayIndexOutOfBoundsException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, ex.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
