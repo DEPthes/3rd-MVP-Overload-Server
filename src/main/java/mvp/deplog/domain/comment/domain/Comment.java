@@ -37,7 +37,7 @@ public class Comment extends BaseEntity {
     @Min(value = 1)
     private int depth;
 
-    @Builder(builderMethodName = "commentBuilder")
+    @Builder(builderMethodName = "commentBuilder", builderClassName = "commentBuilder")
     public Comment(Post post, String content, String nickname) {
         this.parentComment = null;
         this.post = post;
@@ -46,7 +46,7 @@ public class Comment extends BaseEntity {
         this.depth = 1;
     }
 
-    @Builder(builderMethodName = "replyBuilder")
+    @Builder(builderMethodName = "replyBuilder", builderClassName = "replyBuilder")
     public Comment(Comment parentComment, Post post, String content, String nickname) {
         this.parentComment = parentComment;
         this.post = post;
