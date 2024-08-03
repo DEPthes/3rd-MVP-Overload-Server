@@ -3,14 +3,16 @@ package mvp.deplog.domain.auth.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.RefreshToken;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.auth.dto.LoginReq;
-import mvp.deplog.domain.auth.dto.LoginRes;
-import mvp.deplog.domain.auth.dto.JoinReq;
+import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
+import mvp.deplog.domain.auth.dto.response.LoginRes;
+import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
+import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthServiceImpl implements AuthService{
 
+    private final RedisUtil redisUtil;
     private final AuthenticationManager authenticationManager;
 
     private final MemberRepository memberRepository;
@@ -35,8 +38,17 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public SuccessResponse<Message> join(JoinReq joinReq) {
+        String email = joinReq.getEmail();
+        if (memberRepository.existsByEmail(email))
+            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+
+        String data = redisUtil.getData(email + "_verify");
+        if (data == null)
+            throw new IllegalArgumentException("인증이 필요한 이메일입니다.");
+        redisUtil.deleteData(email + "_verify");
+
         Member member = Member.builder()
-                .email(joinReq.getEmail())
+                .email(email)
                 .password(passwordEncoder.encode(joinReq.getPassword()))
                 .name(joinReq.getName())
                 .part(joinReq.getPart())
@@ -93,9 +105,14 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         return SuccessResponse.of(loginRes);
+    }
 
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(loginRes);
+    @Override
+    public SuccessResponse<EmailDuplicateCheckRes> checkEmailDuplicate(String email) {
+        EmailDuplicateCheckRes emailDuplicateCheckRes = EmailDuplicateCheckRes.builder()
+                .availability(!memberRepository.existsByEmail(email))
+                .build();
+
+        return SuccessResponse.of(emailDuplicateCheckRes);
     }
 }

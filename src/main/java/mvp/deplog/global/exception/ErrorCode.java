@@ -79,7 +79,11 @@ public enum ErrorCode {
     // Business Error
     BUSINESS_EXCEPTION_ERROR(400, "B999", "Business Exception Error"),
 
-    NETWORK_AUTHENTICATION_REQUIRED(511, "B998", "Network Authentication Required");
+    NETWORK_AUTHENTICATION_REQUIRED(511, "B998", "Network Authentication Required"),
+
+    ILLEGAL_ARGUMENT_EXCEPTION_ERROR(400, "B997", "Illegal Argument Exception Error"),
+
+    ARRAY_INDEX_OUT_OF_BOUNDS_ERROR(400, "B996", "Array Index Out of Bounds Error")
 
     ;
 
