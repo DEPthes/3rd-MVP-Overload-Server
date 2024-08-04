@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
+import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.global.common.Message;
@@ -38,5 +39,11 @@ public class AuthController implements AuthApi {
     @GetMapping(value = "/emails")
     public ResponseEntity<SuccessResponse<EmailDuplicateCheckRes>> checkEmailDuplicate(@RequestParam(value = "email") String email) {
         return ResponseEntity.ok(authServiceImpl.checkEmailDuplicate(email));
+    }
+
+    @Override
+    @PutMapping("/password")
+    public ResponseEntity<SuccessResponse<Message>> modifyPassword(@Valid @RequestBody ModifyPasswordReq modifyPasswordReq) {
+        return ResponseEntity.ok(authServiceImpl.modifyPassword(modifyPasswordReq));
     }
 }
