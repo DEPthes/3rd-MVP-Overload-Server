@@ -1,4 +1,4 @@
-package mvp.deplog.domain.post.dto;
+package mvp.deplog.domain.post.dto.request;
 
 import lombok.Data;
 

@@ -8,7 +8,7 @@ import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.PostReq;
-import mvp.deplog.domain.post.dto.PostListRes;
+import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,10 +81,5 @@ public class PostService {
         }
 
         return postList.map(this::convertToDTO);
-    }
-    private PostListRes convertToDTO(Post post) {
-        String preview = null;
-        String image = null;
-        for()
     }
 }
