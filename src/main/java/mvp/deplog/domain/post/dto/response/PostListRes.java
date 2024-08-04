@@ -1,10 +1,12 @@
 package mvp.deplog.domain.post.dto.response;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class PostListRes {
 
     private String title;   // 제목

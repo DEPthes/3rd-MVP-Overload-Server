@@ -6,6 +6,7 @@ import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.PostReq;
 import mvp.deplog.domain.post.dto.response.PostListRes;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,17 +71,30 @@ public class PostService {
         return SuccessResponse.of(createPostRes);
     }
 
-    public Page<PostListRes> getPostByPart(Part part, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
-        Page<Post> postList;
+    public SuccessResponse<Page<PostListRes>> getPosts(PostListReq postListReq, int page, int size) {
+        Part part = postListReq.getPart();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Post> posts;
 
         if(part == null) {
-            postList = postRepository.findAll(pageable);
+            posts = postRepository.findAll(pageable);
         }
         else {
-            postList = postRepository.findByPart(part, pageable);
+            posts = postRepository.findByMemberPart(part, pageable);
         }
 
-        return postList.map(this::convertToDTO);
+        Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
+                .title(post.getTitle())
+                .previewContent(post.getPreviewContent())
+                .previewImage(post.getPreviewImage())
+                .createdDate(post.getCreatedDate())
+                .name(post.getMember().getName())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .scrapCount(post.getScrapCount())
+                .build());
+
+        return SuccessResponse.of(postList);
+
     }
 }

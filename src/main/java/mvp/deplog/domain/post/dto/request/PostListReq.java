@@ -1,10 +1,10 @@
 package mvp.deplog.domain.post.dto.request;
 
 import lombok.Data;
+import mvp.deplog.domain.member.domain.Part;
 
 @Data
 public class PostListReq {
-    private String part;
-    private Integer page;
-    private Integer size;
+
+    private Part part;
 }
