@@ -27,8 +27,6 @@ public class MailService {
     private final MemberRepository memberRepository;
 
     public SuccessResponse<MailCodeRes> sendMail(String email) throws Exception {
-        if (memberRepository.existsByEmail(email))
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         String code = mailUtil.generateCode();
         redisUtil.setDataExpire(code, email, 60 * 3L);
 
