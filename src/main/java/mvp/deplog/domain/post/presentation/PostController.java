@@ -1,7 +1,6 @@
 package mvp.deplog.domain.post.presentation;
 
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
@@ -10,9 +9,6 @@ import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,11 +31,8 @@ public class PostController implements PostApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(
-            @RequestBody PostListReq postListReq,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-
+    public ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(@RequestBody PostListReq postListReq,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(postService.getPosts(postListReq, page, size));
     }
 }

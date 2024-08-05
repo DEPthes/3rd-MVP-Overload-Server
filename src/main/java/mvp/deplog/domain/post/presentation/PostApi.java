@@ -44,6 +44,17 @@ public interface PostApi {
             @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody PostReq postReq
     );
 
+    @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 파트에 맞춰 출력합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 목록 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 목록 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @GetMapping
     ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(
             @Parameter(description = "Schemas의 PostListReq를 참고해주세요.", required = false) @RequestBody PostListReq postListReq,
