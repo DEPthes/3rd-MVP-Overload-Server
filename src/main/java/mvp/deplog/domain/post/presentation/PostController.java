@@ -32,6 +32,13 @@ public class PostController implements PostApi {
     }
 
     @Override
+    @GetMapping
+    public ResponseEntity<SuccessResponse<PageResponse>> getAllPost(@RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size){
+        return ResponseEntity.ok(postService.getAllPosts(page, size));
+    }
+
+    @Override
     @GetMapping("/{part}")
     public ResponseEntity<SuccessResponse<PageResponse>> getPartPost(@PathVariable("part") Part part,
         @RequestParam(defaultValue = "1") Integer page,

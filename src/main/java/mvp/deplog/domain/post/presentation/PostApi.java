@@ -42,7 +42,7 @@ public interface PostApi {
             @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody PostReq postReq
     );
 
-    @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 파트에 맞춰 출력합니다.")
+    @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
@@ -54,8 +54,25 @@ public interface PostApi {
             )
     })
     @GetMapping
+    ResponseEntity<SuccessResponse<PageResponse>> getAllPost(
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
+    );
+
+    @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 파트에 맞춰 출력합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 목록 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 목록 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/{part}")
     ResponseEntity<SuccessResponse<PageResponse>> getPartPost(
-            @Parameter(description = "보고싶은 게시글 목록의 파트를 입력해주세요.", required = false) @RequestParam(value = "part") Part part,
+            @Parameter(description = "보고싶은 게시글 목록의 파트를 입력해주세요.", required = true) @PathVariable(value = "part") Part part,
             @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
             @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
     );

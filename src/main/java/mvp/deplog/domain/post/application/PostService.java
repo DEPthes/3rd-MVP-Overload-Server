@@ -76,6 +76,27 @@ public class PostService {
         return SuccessResponse.of(createPostRes);
     }
 
+    public SuccessResponse<PageResponse> getAllPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
+                .title(post.getTitle())
+                .previewContent(post.getPreviewContent())
+                .previewImage(post.getPreviewImage())
+                .createdDate(post.getCreatedDate().toLocalDate())
+                .name(post.getMember().getName())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .scrapCount(post.getScrapCount())
+                .build());
+
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
+
+        return SuccessResponse.of(pageResponse);
+    }
+
     public SuccessResponse<PageResponse> getPosts(Part part, int page, int size) {
         Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
         Page<Post> posts;
