@@ -2,6 +2,7 @@ package mvp.deplog.domain.auth.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import mvp.deplog.domain.auth.application.AuthService;
 import mvp.deplog.domain.auth.application.AuthServiceImpl;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
@@ -19,31 +20,31 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController implements AuthApi {
 
-    private final AuthServiceImpl authServiceImpl;
+    private final AuthService authService;
 
     @Override
     @PostMapping(value = "/join")
     public ResponseEntity<SuccessResponse<Message>> join(@Valid @RequestBody JoinReq joinReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(authServiceImpl.join(joinReq));
+                .body(authService.join(joinReq));
     }
 
     @Override
     @PostMapping(value = "/login")
     public ResponseEntity<SuccessResponse<LoginRes>> login(@Valid @RequestBody LoginReq loginReq) {
-        return ResponseEntity.ok(authServiceImpl.login(loginReq));
+        return ResponseEntity.ok(authService.login(loginReq));
     }
 
     @Override
     @GetMapping(value = "/emails")
     public ResponseEntity<SuccessResponse<EmailDuplicateCheckRes>> checkEmailDuplicate(@RequestParam(value = "email") String email) {
-        return ResponseEntity.ok(authServiceImpl.checkEmailDuplicate(email));
+        return ResponseEntity.ok(authService.checkEmailDuplicate(email));
     }
 
     @Override
     @PutMapping("/password")
     public ResponseEntity<SuccessResponse<Message>> modifyPassword(@Valid @RequestBody ModifyPasswordReq modifyPasswordReq) {
-        return ResponseEntity.ok(authServiceImpl.modifyPassword(modifyPasswordReq));
+        return ResponseEntity.ok(authService.modifyPassword(modifyPasswordReq));
     }
 }
