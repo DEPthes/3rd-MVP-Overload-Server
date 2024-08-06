@@ -42,6 +42,10 @@ public class Member extends BaseEntity {
     @Column(name = "avatar_image", columnDefinition = "TEXT")
     private String avatarImage;
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
     @Builder
     public Member(String email, String password, String name, int generation, Part part) {
         this.email = email;

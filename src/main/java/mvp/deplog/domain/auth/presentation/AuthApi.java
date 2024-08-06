@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
+import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.global.common.Message;
@@ -67,5 +68,21 @@ public interface AuthApi {
     @GetMapping(value = "/emails")
     ResponseEntity<SuccessResponse<EmailDuplicateCheckRes>> checkEmailDuplicate (
             @Parameter(description = "검사할 이메일을 입력해주세요.", required = true) @RequestParam(value = "email") String email
+    );
+
+    @Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "비밀번호 변경 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "비밀번호 변경 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PutMapping(value = "/password")
+    ResponseEntity<SuccessResponse<Message>> modifyPassword (
+            @Parameter(description = "비밀번호를 변경할 계정의 이메일을 입력해주세요.", required = true) @Valid @RequestBody ModifyPasswordReq modifyPasswordReq
     );
 }
