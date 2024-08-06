@@ -45,6 +45,10 @@ public interface PostApi {
     @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
     @ApiResponses(value = {
             @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
+            @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
             ),
@@ -61,6 +65,10 @@ public interface PostApi {
 
     @Operation(summary = "게시글 목록 조회 API", description = "게시글 목록을 파트에 맞춰 출력합니다.")
     @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}

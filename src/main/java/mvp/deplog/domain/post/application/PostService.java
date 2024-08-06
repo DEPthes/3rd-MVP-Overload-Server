@@ -77,7 +77,7 @@ public class PostService {
     }
 
     public SuccessResponse<PageResponse> getAllPosts(int page, int size) {
-        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts = postRepository.findAll(pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
@@ -99,7 +99,7 @@ public class PostService {
     }
 
     public SuccessResponse<PageResponse> getPosts(Part part, int page, int size) {
-        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts;
 
         posts = postList(part, pageable);
@@ -122,6 +122,7 @@ public class PostService {
         return SuccessResponse.of(pageResponse);
     }
 
+    // 개발 관련 파트(WEB, ANDROID, SERVER) Grouping
     private Page<Post> postList(Part part, Pageable pageable) {
         Page<Post> posts;
         List<Part> partGroup;
