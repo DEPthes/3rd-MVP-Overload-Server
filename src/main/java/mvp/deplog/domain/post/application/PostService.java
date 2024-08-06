@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -78,16 +79,8 @@ public class PostService {
     public SuccessResponse<PageResponse> getPosts(Part part, int page, int size) {
         Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
         Page<Post> posts;
-        List<Part> partGroup;
 
-        switch (part){
-            case PLAN -> partGroup = List.of(Part.PLAN);
-            case DESIGN -> partGroup = List.of(Part.DESIGN);
-            case WEB, ANDROID, SERVER -> partGroup = List.of(Part.WEB, Part.ANDROID, Part.SERVER);
-            default -> partGroup = List.of(part);
-        }
-
-        posts = postRepository.findByMemberPart(partGroup, pageable);
+        posts = postList(part, pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
                 .title(post.getTitle())
@@ -104,5 +97,17 @@ public class PostService {
         PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
 
         return SuccessResponse.of(pageResponse);
+    }
+
+    private Page<Post> postList(Part part, Pageable pageable) {
+        Page<Post> posts;
+        List<Part> partGroup;
+        switch (part){
+            case WEB, ANDROID, SERVER -> partGroup = List.of(Part.WEB, Part.ANDROID, Part.SERVER);
+            default -> partGroup = List.of(part);
+        }
+        posts = postRepository.findByMemberPart(partGroup, pageable);
+
+        return posts;
     }
 }
