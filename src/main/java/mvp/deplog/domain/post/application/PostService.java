@@ -14,6 +14,8 @@ import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
 import mvp.deplog.domain.tagging.repository.TaggingRepository;
+import mvp.deplog.global.common.PageInfo;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.markdown.MarkdownUtil;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -71,16 +75,19 @@ public class PostService {
         return SuccessResponse.of(createPostRes);
     }
 
-    public SuccessResponse<Page<PostListRes>> getPosts(Part part, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+    public SuccessResponse<PageResponse> getPosts(Part part, int page, int size) {
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdDate").descending());
         Page<Post> posts;
+        List<Part> partGroup;
 
-        if(part == null) {
-            posts = postRepository.findAll(pageable);
+        switch (part){
+            case PLAN -> partGroup = List.of(Part.PLAN);
+            case DESIGN -> partGroup = List.of(Part.DESIGN);
+            case WEB, ANDROID, SERVER -> partGroup = List.of(Part.WEB, Part.ANDROID, Part.SERVER);
+            default -> partGroup = List.of(part);
         }
-        else {
-            posts = postRepository.findByMemberPart(part, pageable);
-        }
+
+        posts = postRepository.findByMemberPart(partGroup, pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
                 .title(post.getTitle())
@@ -93,7 +100,9 @@ public class PostService {
                 .scrapCount(post.getScrapCount())
                 .build());
 
-        return SuccessResponse.of(postList);
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
 
+        return SuccessResponse.of(pageResponse);
     }
 }

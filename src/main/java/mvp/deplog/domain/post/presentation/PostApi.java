@@ -13,6 +13,7 @@ import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.PostReq;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -53,9 +54,9 @@ public interface PostApi {
             )
     })
     @GetMapping
-    ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(
+    ResponseEntity<SuccessResponse<PageResponse>> getAllPost(
             @Parameter(description = "보고싶은 게시글 목록의 파트를 입력해주세요.", required = false) @PathVariable Part part,
-            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. 기본값은 1입니다.", required = true) @RequestParam(defaultValue = "1") int page,
-            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(defaultValue = "10") int size
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. 기본값은 1입니다.", required = true) @RequestParam int page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam int size
     );
 }

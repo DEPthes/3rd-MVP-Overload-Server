@@ -7,6 +7,7 @@ import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.PostReq;
 import mvp.deplog.domain.post.dto.response.PostListRes;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.data.domain.Page;
@@ -32,9 +33,9 @@ public class PostController implements PostApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(@PathVariable Part part,
-        @RequestParam int page,
-        @RequestParam int size){
+    public ResponseEntity<SuccessResponse<PageResponse>> getAllPost(@PathVariable("part") Part part,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(postService.getPosts(part, page, size));
     }
 }
