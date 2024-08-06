@@ -1,14 +1,20 @@
 package mvp.deplog.domain.post.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class PostListRes {
+
+    @Schema(type = "Long", example = "1", description = "게시글 아이디입니다.")
+    private Long id;
 
     @Schema(type = "String", example = "게시글 제목", description= "게시글 제목입니다.")
     private String title;
@@ -21,8 +27,10 @@ public class PostListRes {
     @Schema(type = "String", example = "**게시글 미리보기 내용**", description= "게시글 미리보기 내용입니다.")
     private String previewContent;
 
-    @Schema(type = "LocalDateTime", example = "2024-08-05-T11:03:57.47865", description= "게시글 작성 날짜 및 시간입니다.")
-    private LocalDateTime createdDate;
+    @Schema(type = "LocalDate", example = "2024-08-05", description= "게시글 작성 날짜입니다.")
+    @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
+    private LocalDate createdDate;
 
     @Schema(type = "String", example = "홍길동", description= "게시글 작성자의 이름입니다.")
     private String name;

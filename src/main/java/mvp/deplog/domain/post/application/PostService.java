@@ -71,8 +71,7 @@ public class PostService {
         return SuccessResponse.of(createPostRes);
     }
 
-    public SuccessResponse<Page<PostListRes>> getPosts(PostListReq postListReq, int page, int size) {
-        Part part = postListReq.getPart();
+    public SuccessResponse<Page<PostListRes>> getPosts(Part part, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts;
 
@@ -87,7 +86,7 @@ public class PostService {
                 .title(post.getTitle())
                 .previewContent(post.getPreviewContent())
                 .previewImage(post.getPreviewImage())
-                .createdDate(post.getCreatedDate())
+                .createdDate(post.getCreatedDate().toLocalDate())
                 .name(post.getMember().getName())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())

@@ -19,10 +19,7 @@ import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Post API", description = "게시글 관련 API입니다.")
 public interface PostApi {
@@ -57,8 +54,8 @@ public interface PostApi {
     })
     @GetMapping
     ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(
-            @Parameter(description = "Schemas의 PostListReq를 참고해주세요.", required = false) @RequestBody PostListReq postListReq,
-            @RequestParam int page,
-            @RequestParam int size
+            @Parameter(description = "보고싶은 게시글 목록의 파트를 입력해주세요.", required = false) @PathVariable Part part,
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. 기본값은 1입니다.", required = true) @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(defaultValue = "10") int size
     );
 }

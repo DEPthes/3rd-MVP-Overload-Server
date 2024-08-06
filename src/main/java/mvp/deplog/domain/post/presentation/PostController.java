@@ -1,6 +1,7 @@
 package mvp.deplog.domain.post.presentation;
 
 import lombok.RequiredArgsConstructor;
+import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
@@ -31,8 +32,9 @@ public class PostController implements PostApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(@RequestBody PostListReq postListReq,
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.ok(postService.getPosts(postListReq, page, size));
+    public ResponseEntity<SuccessResponse<Page<PostListRes>>> getAllPost(@PathVariable Part part,
+        @RequestParam int page,
+        @RequestParam int size){
+        return ResponseEntity.ok(postService.getPosts(part, page, size));
     }
 }
