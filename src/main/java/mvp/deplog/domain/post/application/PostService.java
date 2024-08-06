@@ -81,6 +81,7 @@ public class PostService {
         Page<Post> posts = postRepository.findAll(pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .previewContent(post.getPreviewContent())
                 .previewImage(post.getPreviewImage())
@@ -104,6 +105,7 @@ public class PostService {
         posts = postList(part, pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .previewContent(post.getPreviewContent())
                 .previewImage(post.getPreviewImage())
