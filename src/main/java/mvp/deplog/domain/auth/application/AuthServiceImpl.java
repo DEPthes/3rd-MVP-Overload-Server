@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.RefreshToken;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
@@ -39,13 +40,10 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public SuccessResponse<Message> join(JoinReq joinReq) {
         String email = joinReq.getEmail();
+        checkVerify(joinReq.getEmail());
+
         if (memberRepository.existsByEmail(email))
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
-
-        String data = redisUtil.getData(email + "_verify");
-        if (data == null)
-            throw new IllegalArgumentException("인증이 필요한 이메일입니다.");
-        redisUtil.deleteData(email + "_verify");
 
         Member member = Member.builder()
                 .email(email)
@@ -114,5 +112,33 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         return SuccessResponse.of(emailDuplicateCheckRes);
+    }
+
+    @Override
+    @Transactional
+    public SuccessResponse<Message> modifyPassword(ModifyPasswordReq modifyPasswordReq) {
+        String email = modifyPasswordReq.getEmail();
+        checkVerify(email);
+
+        memberRepository.findByEmail(email)
+                .ifPresentOrElse(
+                        member -> member.updatePassword(passwordEncoder.encode(modifyPasswordReq.getPassword())),
+                        () -> {
+                            throw new IllegalArgumentException("해당 이메일로 가입된 계정이 존재하지 않습니다.");
+                        }
+                );
+
+        Message message = Message.builder()
+                .message("비밀번호 변경이 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
+
+    private void checkVerify(String email) {
+        String data = redisUtil.getData(email + "_verify");
+        if (data == null)
+            throw new IllegalArgumentException("인증이 필요한 이메일입니다.");
+        redisUtil.deleteData(email + "_verify");
     }
 }
