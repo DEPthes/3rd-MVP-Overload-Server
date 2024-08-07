@@ -34,7 +34,7 @@ public class S3FileServiceImpl implements FileService {
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
 
-        String filePath = dirName + saveFileName;
+        String filePath = dirName + "/" + saveFileName;
         try (InputStream inputStream = file.getInputStream()) {
             // S3에 업로드
             amazonS3.putObject(new PutObjectRequest(bucket, filePath, inputStream, metadata));
@@ -47,7 +47,7 @@ public class S3FileServiceImpl implements FileService {
 
     @Override
     public void deleteFile(String fileName, String dirName) {
-        String filePath = dirName + fileName;
+        String filePath = dirName + "/" + fileName;
         try {
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, filePath));
         } catch (AmazonServiceException e) {
