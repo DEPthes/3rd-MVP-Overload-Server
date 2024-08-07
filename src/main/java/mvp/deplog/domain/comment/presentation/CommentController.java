@@ -3,7 +3,6 @@ package mvp.deplog.domain.comment.presentation;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.application.CommentService;
 import mvp.deplog.domain.comment.dto.request.CommentReq;
-import mvp.deplog.domain.comment.dto.response.CommentRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.http.HttpStatus;
