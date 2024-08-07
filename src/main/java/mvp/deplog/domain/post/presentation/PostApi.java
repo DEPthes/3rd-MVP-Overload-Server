@@ -86,6 +86,7 @@ public interface PostApi {
 
     @GetMapping("/{post_id}")
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
+            @Parameter(description = "Access Token을 입력하세요.", required = false) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "post_id") Long post_id
     );
 }
