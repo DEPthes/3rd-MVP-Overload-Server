@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
@@ -81,5 +82,10 @@ public interface PostApi {
             @Parameter(description = "보고싶은 게시글 목록의 파트를 입력해주세요.", required = true) @PathVariable(value = "part") Part part,
             @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
             @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
+    );
+
+    @GetMapping("/{post_id}")
+    ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
+            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "post_id") Long post_id
     );
 }

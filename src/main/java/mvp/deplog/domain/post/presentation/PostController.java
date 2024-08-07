@@ -5,6 +5,7 @@ import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -41,5 +42,11 @@ public class PostController implements PostApi {
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "10") Integer size){
         return ResponseEntity.ok(postService.getPosts(part, page-1, size));
+    }
+
+    @Override
+    @GetMapping("/{post_id}")
+    public ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(@PathVariable("post_id") Long postId){
+        return ResponseEntity.ok(postService.getPostDetails(postId));
     }
 }

@@ -8,6 +8,7 @@ import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
@@ -130,5 +131,12 @@ public class PostService {
         posts = postRepository.findByMemberPart(partGroup, pageable);
 
         return posts;
+    }
+
+    public SuccessResponse<PostDetailsRes> getPostDetails(Long postId) {
+
+        PostDetailsRes postDetailsRes = null;
+
+        return SuccessResponse.of(postDetailsRes);
     }
 }
