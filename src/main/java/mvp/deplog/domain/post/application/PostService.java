@@ -6,9 +6,8 @@ import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
-import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
-import mvp.deplog.domain.post.dto.request.PostReq;
+import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
@@ -22,11 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,15 +36,15 @@ public class PostService {
     private final TaggingRepository taggingRepository;
 
     @Transactional
-    public SuccessResponse<CreatePostRes> createPost(Member member, PostReq postReq) {
+    public SuccessResponse<CreatePostRes> createPost(Member member, CreatePostReq createPostReq) {
 
-        String content = postReq.getContent();
+        String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
 
         Post post = Post.builder()
                 .member(member)
-                .title(postReq.getTitle())
+                .title(createPostReq.getTitle())
                 .content(content)
                 .previewContent(previewContent)
                 .previewImage(previewImage)
@@ -57,7 +54,7 @@ public class PostService {
         Post savePost = postRepository.save(post);
 
         // 태그 저장 & Tagging 엔티티 연결
-        for(String tagName : postReq.getTagNameList()) {
+        for(String tagName : createPostReq.getTagNameList()) {
             Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() ->
                             tagRepository.save(Tag.builder().name(tagName).build()));

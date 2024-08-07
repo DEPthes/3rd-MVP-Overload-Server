@@ -3,14 +3,11 @@ package mvp.deplog.domain.post.presentation;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostService;
-import mvp.deplog.domain.post.dto.request.PostListReq;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
-import mvp.deplog.domain.post.dto.request.PostReq;
-import mvp.deplog.domain.post.dto.response.PostListRes;
+import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,10 +22,10 @@ public class PostController implements PostApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<SuccessResponse<CreatePostRes>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostReq postReq) {
+    public ResponseEntity<SuccessResponse<CreatePostRes>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(postService.createPost(userDetails.getMember(), postReq));
+                .body(postService.createPost(userDetails.getMember(), createPostReq));
     }
 
     @Override
