@@ -48,7 +48,6 @@ public class AuthServiceImpl implements AuthService{
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
 
         Member member = memberAuthMapper.joinToMember(joinReq);
-
         memberRepository.save(member);
 
         Message message = Message.builder()
