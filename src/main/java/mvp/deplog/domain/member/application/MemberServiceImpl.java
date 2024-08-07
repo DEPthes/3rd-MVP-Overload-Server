@@ -3,6 +3,7 @@ package mvp.deplog.domain.member.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.domain.member.dto.mapper.MemberMapper;
 import mvp.deplog.domain.member.dto.response.MyInfoRes;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -15,17 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     @Override
     public SuccessResponse<MyInfoRes> getMyInfo(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
-        MyInfoRes myInfoRes = MyInfoRes.builder()
-                .memberId(member.getId())
-                .avatarImage(member.getAvatarImage())
-                .memberName(member.getName())
-                .part(member.getPart())
-                .email(member.getEmail())
-                .build();
+        MyInfoRes myInfoRes = memberMapper.memberToMyInfo(member);
 
         return SuccessResponse.of(myInfoRes);
     }
