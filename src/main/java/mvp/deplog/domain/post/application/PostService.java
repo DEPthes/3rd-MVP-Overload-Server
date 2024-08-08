@@ -18,6 +18,9 @@ import mvp.deplog.global.common.PageInfo;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.markdown.MarkdownUtil;
+import mvp.deplog.infrastructure.s3.S3FileUtil;
+import mvp.deplog.infrastructure.s3.application.FileService;
+import mvp.deplog.infrastructure.s3.dto.response.FileUrlRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +38,13 @@ import java.util.List;
 @Service
 public class PostService {
 
+    private final FileService fileService;
+
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final TaggingRepository taggingRepository;
+
+    private static final String DIRNAME = "post";
 
     @Transactional
     public SuccessResponse<CreatePostRes> createPost(Member member, PostReq postReq) {
@@ -133,5 +141,15 @@ public class PostService {
         posts = postRepository.findByMemberPart(partGroup, pageable);
 
         return posts;
+    }
+
+    public SuccessResponse<FileUrlRes> uploadImages(MultipartFile multipartFile) {
+        String filePath = fileService.uploadFile(multipartFile, DIRNAME);
+
+        FileUrlRes fileUrlRes = FileUrlRes.builder()
+                .fileUrl(filePath)
+                .build();
+
+        return SuccessResponse.of(fileUrlRes);
     }
 }
