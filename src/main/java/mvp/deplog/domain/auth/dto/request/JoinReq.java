@@ -31,6 +31,6 @@ public class JoinReq {
     @Schema(type = "ENUM(Part)", example = "SERVER", description= "회원의 파트입니다.", allowableValues = {"PLAN", "DESIGN", "ANDROID", "WEB", "SERVER"})
     private Part part;
 
-    @Schema(type = "Integer", example = "2", description= "회원의 기수입니다.")
-    private Integer generation;
+    @Schema(type = "int", example = "2", description= "회원의 기수입니다.")
+    private int generation;
 }

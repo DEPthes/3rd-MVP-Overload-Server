@@ -9,10 +9,13 @@ import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
+import mvp.deplog.infrastructure.s3.dto.response.FileUrlRes;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,6 +45,12 @@ public class PostController implements PostApi {
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "10") Integer size){
         return ResponseEntity.ok(postService.getPosts(part, page-1, size));
+    }
+
+    @Override
+    @PostMapping("/uploadImages")
+    public ResponseEntity<SuccessResponse<FileUrlRes>> uploadImage(MultipartFile multipartFile) {
+        return ResponseEntity.ok(postService.uploadImages(multipartFile));
     }
 
     @Override

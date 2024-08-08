@@ -3,6 +3,7 @@ package mvp.deplog.domain.auth.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.domain.RefreshToken;
 import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
+import mvp.deplog.domain.auth.dto.mapper.MemberAuthMapper;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
@@ -30,6 +31,7 @@ public class AuthServiceImpl implements AuthService{
 
     private final RedisUtil redisUtil;
     private final AuthenticationManager authenticationManager;
+    private final MemberAuthMapper memberAuthMapper;
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -45,14 +47,7 @@ public class AuthServiceImpl implements AuthService{
         if (memberRepository.existsByEmail(email))
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
 
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(joinReq.getPassword()))
-                .name(joinReq.getName())
-                .part(joinReq.getPart())
-                .generation(joinReq.getGeneration())
-                .build();
-
+        Member member = memberAuthMapper.joinToMember(joinReq);
         memberRepository.save(member);
 
         Message message = Message.builder()

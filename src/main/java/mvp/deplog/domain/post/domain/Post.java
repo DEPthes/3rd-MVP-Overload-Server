@@ -63,4 +63,26 @@ public class Post extends BaseEntity {
         this.viewCount = 0;
         this.stage = stage;
     }
+
+
+    // 스크랩 수 증가
+    public void incrementScrapCount() {
+        this.scrapCount++;
+    }
+    // 스크랩 수 감소
+    public void decrementScrapCount() {
+        if(this.scrapCount > 0){
+            this.scrapCount--;
+        }
+    }
+    // 좋아요 수 증가
+    public void incrementLikesCount() {
+        this.likeCount++;
+    }
+    // 좋아요 수 감소
+    public void decrementLikesCount() {
+        if(this.likeCount > 0){
+            this.likeCount--;
+        }
+    }
 }
