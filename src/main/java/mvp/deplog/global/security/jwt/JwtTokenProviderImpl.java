@@ -89,7 +89,9 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         refreshTokenRepository.findByRefreshToken(refreshToken)
                 .ifPresentOrElse(
                         findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
-                        () -> new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken)
+                        () -> {
+                            throw new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken);
+                        }
                 );
     }
 
@@ -101,7 +103,9 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         refreshTokenRepository.findByMemberEmail(email)
                 .ifPresentOrElse(
                         refreshTokenRepository::delete,
-                        () -> new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email)
+                        () -> {
+                            throw new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email);
+                        }
                 );
     }
 
