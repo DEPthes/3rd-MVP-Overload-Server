@@ -14,6 +14,7 @@ import mvp.deplog.global.exception.ErrorResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -34,6 +35,12 @@ public interface ScrapApi {
     @PostMapping("/{post_id}")
     ResponseEntity<SuccessResponse<Message>> scrapPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 ScrapReq를 참고해주세요.", required = true) @PathVariable(value = "post_id")Long postId
+            @Parameter(description = "스크랩 할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "post_id")Long postId
+            );
+
+    @DeleteMapping("/{post_id}")
+    ResponseEntity<SuccessResponse<Message>> deleteScrapPost(
+            @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "스크랩을 해제할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "post_id")Long postId
             );
 }

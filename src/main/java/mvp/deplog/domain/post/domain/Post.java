@@ -69,4 +69,10 @@ public class Post extends BaseEntity {
     public void incrementScrapCount() {
         this.scrapCount++;
     }
+    // 스크랩 수 감소
+    public void decrementScrapCount() {
+        if(this.scrapCount > 0){
+            this.scrapCount--;
+        }
+    }
 }
