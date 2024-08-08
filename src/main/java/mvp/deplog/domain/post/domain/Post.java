@@ -75,4 +75,8 @@ public class Post extends BaseEntity {
             this.scrapCount--;
         }
     }
+    // 좋아요 수 증가
+    public void incrementLikesCount() {
+        this.likeCount++;
+    }
 }
