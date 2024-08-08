@@ -12,4 +12,5 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     boolean existsByMemberAndPost(Member member, Post post);
 
     Optional<Scrap> findByMemberAndPost(Member member, Post post);
+
 }
