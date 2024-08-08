@@ -30,8 +30,6 @@ public class ScrapController implements ScrapApi {
     @DeleteMapping("/{post_id}")
     public ResponseEntity<SuccessResponse<Message>> deleteScrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                     @PathVariable(value = "post_id") Long postId){
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(scrapService.deleteScrapPost(userDetails.getMember().getId(), postId));
+        return ResponseEntity.ok(scrapService.deleteScrapPost(userDetails.getMember().getId(), postId));
     }
 }
