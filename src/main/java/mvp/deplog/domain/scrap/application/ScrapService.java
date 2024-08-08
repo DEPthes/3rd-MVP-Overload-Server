@@ -45,4 +45,23 @@ public class ScrapService {
 
         return SuccessResponse.of(message);
     }
+
+    @Transactional
+    public SuccessResponse<Message> deleteScrapPost(Long memberId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 게시글이 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 회원이 없습니다: " + memberId));
+        Scrap scrap = scrapRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글은 스크랩하지 않았습니다. 먼저 스크랩해주세요."));
+
+        post.decrementScrapCount();
+        scrapRepository.delete(scrap);
+
+        Message message = Message.builder()
+                .message("게시글 스크랩 해제를 완료했습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
 }
