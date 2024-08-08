@@ -63,4 +63,10 @@ public class Post extends BaseEntity {
         this.viewCount = 0;
         this.stage = stage;
     }
+
+
+    // 스크랩 수 증가
+    public void incrementScrapCount() {
+        this.scrapCount++;
+    }
 }
