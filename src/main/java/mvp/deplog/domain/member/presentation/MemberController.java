@@ -27,7 +27,7 @@ public class MemberController implements MemberApi {
     }
 
     @Override
-    public ResponseEntity<SuccessResponse<Message>> modifyAvatar(UserDetailsImpl userDetails, MultipartFile multipartFile) {
+    public ResponseEntity<SuccessResponse<Message>> modifyAvatar(@AuthenticationPrincipal UserDetailsImpl userDetails, MultipartFile multipartFile) {
         return ResponseEntity.ok(memberService.modifyAvatar(userDetails, multipartFile));
     }
 }
