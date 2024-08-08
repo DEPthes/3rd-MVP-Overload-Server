@@ -36,4 +36,21 @@ public interface LikesApi {
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "좋아요 설정할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "postId")Long postId
     );
+
+    @Operation(summary = "좋아요 해제 API", description = "좋아요 설정한 게시글을 해제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "좋아요 해제 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "좋아요 해제 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @DeleteMapping("/{postId}")
+    ResponseEntity<SuccessResponse<Message>> deleteLikesPost(
+            @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "좋아요 설정을 해제할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "postId")Long postId
+    );
 }

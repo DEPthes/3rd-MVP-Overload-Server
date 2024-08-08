@@ -45,4 +45,23 @@ public class LikesService {
 
         return SuccessResponse.of(message);
     }
+
+    @Transactional
+    public SuccessResponse<Message> deleteLikesPost(Long memberId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 게시글이 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 회원이 없습니다: " + memberId));
+        Likes likes = likesRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요 설정을 하지 않았습니다. 먼저 좋아요를 설정을 해주세요."));
+
+        post.decrementLikesCount();
+        likesRepository.delete(likes);
+
+        Message message = Message.builder()
+                .message("게시글 좋아요 해제를 완료했습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
 }

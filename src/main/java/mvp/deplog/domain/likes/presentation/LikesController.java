@@ -25,4 +25,11 @@ public class LikesController implements LikesApi {
                 .status(HttpStatus.CREATED)
                 .body(likesService.likesPost(userDetails.getMember().getId(), postId));
     }
+
+    @Override
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<SuccessResponse<Message>> deleteLikesPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                    @PathVariable(value = "postId") Long postId){
+        return ResponseEntity.ok(likesService.deleteLikesPost(userDetails.getMember().getId(), postId));
+    }
 }
