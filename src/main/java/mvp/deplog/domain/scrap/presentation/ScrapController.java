@@ -18,18 +18,18 @@ public class ScrapController implements ScrapApi {
     private final ScrapService scrapService;
 
     @Override
-    @PostMapping("/{post_id}")
+    @PostMapping("/{postId}")
     public ResponseEntity<SuccessResponse<Message>> scrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                              @PathVariable(value = "post_id") Long postId){
+                                                              @PathVariable(value = "postId") Long postId){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(scrapService.scrapPost(userDetails.getMember().getId(), postId));
     }
 
     @Override
-    @DeleteMapping("/{post_id}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<SuccessResponse<Message>> deleteScrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                    @PathVariable(value = "post_id") Long postId){
+                                                                    @PathVariable(value = "postId") Long postId){
         return ResponseEntity.ok(scrapService.deleteScrapPost(userDetails.getMember().getId(), postId));
     }
 }

@@ -32,10 +32,10 @@ public interface ScrapApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @PostMapping("/{post_id}")
+    @PostMapping("/{postId}")
     ResponseEntity<SuccessResponse<Message>> scrapPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "스크랩 할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "post_id")Long postId
+            @Parameter(description = "스크랩 할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "postId")Long postId
             );
 
     @Operation(summary = "스크랩 해제 API", description = "스크랩한 게시글을 해제합니다.")
@@ -49,9 +49,9 @@ public interface ScrapApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @DeleteMapping("/{post_id}")
+    @DeleteMapping("/{postId}")
     ResponseEntity<SuccessResponse<Message>> deleteScrapPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "스크랩을 해제할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "post_id")Long postId
+            @Parameter(description = "스크랩을 해제할 게시글의 id를 입력해주세요.", required = true) @PathVariable(value = "postId")Long postId
             );
 }
