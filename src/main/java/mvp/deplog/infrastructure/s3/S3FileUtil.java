@@ -21,4 +21,13 @@ public class S3FileUtil {
     public static String getFullPath(String bucket, String fileName) {
         return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
     }
+
+    // url로부터 파일 이름 추출 (delete 시 사용)
+    public static String extractFileNameFromUrl(String filePath) {
+        try {
+            return filePath.substring(filePath.lastIndexOf("/") + 1);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

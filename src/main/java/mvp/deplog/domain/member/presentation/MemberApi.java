@@ -8,12 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.member.dto.response.MyInfoRes;
+import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Member API", description = "회원 관련 API입니다.")
 public interface MemberApi {
@@ -32,5 +36,22 @@ public interface MemberApi {
     @GetMapping
     ResponseEntity<SuccessResponse<MyInfoRes>> getMyInfo(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
+
+    @Operation(summary = "아바타 이미지 업로드 API", description = "아바타 이미지를 업로드합니다. 기존에 아바타가 있는 경우에는 url을 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "아바타 이미지 업로드 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MyInfoRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "아바타 이미지 업로드 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PutMapping
+    ResponseEntity<SuccessResponse<Message>> modifyAvatar(
+            @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "업로드할 이미지 파일 (Multipart form-data 형식)") @RequestPart(value = "avatarImage") MultipartFile multipartFile
     );
 }
