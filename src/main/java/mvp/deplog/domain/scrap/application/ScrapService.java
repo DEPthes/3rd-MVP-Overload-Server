@@ -19,11 +19,17 @@ public class ScrapService {
 
     private final ScrapRepository scrapRepository;
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public SuccessResponse<Message> scrapPost(Member member, Long postId) {
+    public SuccessResponse<Message> scrapPost(Long memberId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 게시글이 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 회원이 없습니다: " + memberId));
+        if(scrapRepository.existsByMemberAndPost(member, post)){
+            throw new IllegalArgumentException("이미 스크랩된 게시글입니다.");
+        }
 
         Scrap scrap = Scrap.builder()
                 .post(post)
@@ -31,7 +37,6 @@ public class ScrapService {
                 .build();
 
         post.incrementScrapCount();
-        postRepository.save(post);      // 스크랩 수 저장
         scrapRepository.save(scrap);    // 스크랩 저장
 
         Message message = Message.builder()

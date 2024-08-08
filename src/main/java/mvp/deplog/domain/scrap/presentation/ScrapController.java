@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/scrap")
+@RequestMapping("/scraps")
 public class ScrapController implements ScrapApi {
 
     private final ScrapService scrapService;
@@ -29,6 +29,6 @@ public class ScrapController implements ScrapApi {
                                                               @PathVariable(value = "post_id") Long postId){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(scrapService.scrapPost(userDetails.getMember(), postId));
+                .body(scrapService.scrapPost(userDetails.getMember().getId(), postId));
     }
 }
