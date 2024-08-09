@@ -172,19 +172,6 @@ public class PostService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
-        // 해당 게시글의 댓글 리스트 조회
-        List<Comment> commentList = commentRepository.findByPostId(postId);
-
-        List<CommentListRes> commentDetails = commentList.stream()
-                .map(comment -> CommentListRes.builder()
-                        .commentId(comment.getId())
-                        .avatarImage(comment.getPost().getMember().getAvatarImage())    // 아바타 이미지에 대한 경로 고민 필요
-                        .nickname(comment.getNickname())
-                        .createdDate(comment.getCreatedDate().toLocalDate())
-                        .content(comment.getContent())
-                        .build())
-                .collect(Collectors.toList());
-
         // 게시글 내용 Markdown으로 변환
         Parser parser = Parser.builder().build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
@@ -224,7 +211,6 @@ public class PostService {
                         .generation(post.getMember().getGeneration())
                         .part(post.getMember().getPart())
                         .build())
-                .commentList(commentDetails)
                 .build();
 
         return SuccessResponse.of(postDetailsRes);

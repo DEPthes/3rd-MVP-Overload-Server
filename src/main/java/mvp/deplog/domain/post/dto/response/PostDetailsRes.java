@@ -49,9 +49,6 @@ public class PostDetailsRes {
     @Schema(type = "WriterInfo", description = "게시글 작성자 처리에 필요한 정보")
     private WriterInfo writerInfo;
 
-    @Schema(type = "List<CommentListRes>", example = "List<CommentListRes> commentList (코드 200 참고)", description = "댓글 목록 반환 리스트")
-    private List<CommentListRes> commentList;
-
     @Data
     @Builder
     public static class WriterInfo {
