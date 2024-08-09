@@ -29,7 +29,7 @@ public class CommentController implements CommentApi {
     }
 
     @Override
-    @GetMapping("/{postId}")
+    @GetMapping("/posts/{postId}")
     public ResponseEntity<SuccessResponse<List<CommentListRes>>> getComments(@PathVariable(value = "postId") Long postId){
         return ResponseEntity.ok(commentService.getCommentList(postId));
     };

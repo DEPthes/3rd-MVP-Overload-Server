@@ -2,6 +2,7 @@ package mvp.deplog.domain.comment.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,7 +50,7 @@ public interface CommentApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @GetMapping("/{postId}")
+    @GetMapping("/posts/{postId}")
     ResponseEntity<SuccessResponse<List<CommentListRes>>> getComments(
             @Parameter(description = "댓글 목록을 확인하고픈 게시글 아이드를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId);
 }

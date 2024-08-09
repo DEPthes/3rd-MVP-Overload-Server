@@ -5,6 +5,7 @@ import mvp.deplog.domain.comment.domain.Comment;
 import mvp.deplog.domain.comment.domain.repository.CommentRepository;
 import mvp.deplog.domain.comment.dto.request.CreateCommentReq;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
+import mvp.deplog.domain.comment.dto.response.ReplyListRes;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.global.common.Message;
@@ -12,10 +13,8 @@ import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,8 +37,7 @@ public class CommentService {
                     .content(createCommentReq.getContent())
                     .nickname(createCommentReq.getNickname())
                     .build();
-        }
-        else{
+        } else{
             Long parentCommentId = createCommentReq.getParentCommentId();
             Comment parentComment = commentRepository.findById(parentCommentId)
                     .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 부모 댓글을 찾을 수 없습니다: " + parentCommentId));
@@ -66,23 +64,36 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 아이디의 게시글이 없습니다: " + postId));
         List<Comment> commentList = commentRepository.findByPost(post);
 
-        // parentId 별로 그룹핑
-        Map<Long, List<CommentListRes>> commentMapByParentId = commentList.stream()
-                .map(comment -> CommentListRes.builder()
+        List<CommentListRes> commentDetails = new ArrayList<>();
+
+        for(Comment comment : commentList) {
+            if(comment.getParentComment() == null){
+                CommentListRes commentListRes = CommentListRes.builder()
                         .commentId(comment.getId())
-                        .avatarImage(comment.getPost().getMember().getAvatarImage())
+                        .avatarImage() // 아바타 이미지 url
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())
-                        .parentCommentId(Optional.ofNullable(comment.getParentComment()).map(Comment::getId).orElse(0L))
-                        .build())
-                .collect(Collectors.groupingBy(CommentListRes::getParentCommentId));
+                        .replyList(new ArrayList<>())   // 대댓글 리스트 초기화
+                        .build();
 
-        // 최상위 댓글을 필터링 해 대댓글 리스트 설정
-        List<CommentListRes> commentDetails = commentMapByParentId.getOrDefault(0L, List.of()).stream()
-                .peek(commentListRes -> commentListRes.setReplyList(Optional.ofNullable(commentMapByParentId.get(commentListRes.getCommentId()))
-                        .orElse(List.of())))
-                .collect(Collectors.toList());
+                commentDetails.add(commentListRes);
+            } else {
+                ReplyListRes replyListRes = ReplyListRes.builder()
+                        .commentId(comment.getId())
+                        .parentCommentId(comment.getParentComment().getId())
+                        .avatarImage()     // 아바타 이미지 url
+                        .nickname(comment.getNickname())
+                        .createdDate(comment.getCreatedDate().toLocalDate())
+                        .content(comment.getContent())
+                        .build();
+
+                commentDetails.stream()
+                        .filter(parentComment -> parentComment.getCommentId().equals(comment.getParentComment().getId()))
+                        .findFirst()
+                        .ifPresent(parentComment -> parentComment.getReplyList().add(replyListRes));
+            }
+        }
 
         return SuccessResponse.of(commentDetails);
     }
