@@ -85,4 +85,8 @@ public class Post extends BaseEntity {
             this.likeCount--;
         }
     }
+    // 조회수 증가
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
 }
