@@ -102,9 +102,9 @@ public interface PostApi {
             @Parameter(description = "업로드할 이미지 파일 (Multipart form-data 형식)") @RequestPart(value = "postImage") MultipartFile multipartFile
     );
 
-    @GetMapping("/{post_id}")
+    @GetMapping("/details/{postId}")
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
-            @Parameter(description = "Access Token을 입력하세요.", required = false) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "post_id") Long post_id
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long post_id
     );
 }

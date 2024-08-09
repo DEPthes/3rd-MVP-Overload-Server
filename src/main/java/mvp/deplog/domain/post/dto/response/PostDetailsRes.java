@@ -5,6 +5,7 @@ import lombok.Data;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.domain.member.domain.Part;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,6 +16,8 @@ public class PostDetailsRes {
     private Boolean mine;
 
     private String title;
+    private LocalDate createdDate;
+    
     private String content;
     private List<String> tagList;
     private Integer viewCount;

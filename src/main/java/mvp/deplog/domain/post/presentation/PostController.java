@@ -54,9 +54,9 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @GetMapping("/{post_id}")
+    @GetMapping("/details/{postId}")
     public ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                          @PathVariable("post_id") Long postId){
-        return ResponseEntity.ok(postService.getPostDetails(userDetails.getMember(), postId));
+                                                                          @PathVariable("postId") Long postId){
+        return ResponseEntity.ok(postService.getPostDetails(userDetails.getMember().getId(), postId));
     }
 }

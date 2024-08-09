@@ -7,6 +7,7 @@ import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.domain.likes.domain.repository.LikesRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
+import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
@@ -55,6 +56,7 @@ public class PostService {
     private final ScrapRepository scrapRepository;
 
     private static final String DIRNAME = "post";
+    private final MemberRepository memberRepository;
 
     @Transactional
     public SuccessResponse<CreatePostRes> createPost(Member member, CreatePostReq createPostReq) {
@@ -163,12 +165,12 @@ public class PostService {
         return SuccessResponse.of(fileUrlRes);
     }
 
-    public SuccessResponse<PostDetailsRes> getPostDetails(Member member, Long postId) {
+    @Transactional
+    public SuccessResponse<PostDetailsRes> getPostDetails(Long memberId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
-        Long currentMemberId = member.getId();
-        Long writerId = post.getMember().getId();
-        boolean sameUser = (currentMemberId != null && currentMemberId.equals(writerId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
         // 해당 게시글의 댓글 리스트 조회
         List<Comment> commentList = commentRepository.findByPostId(postId);
@@ -189,29 +191,41 @@ public class PostService {
         String contentHtml = renderer.render(parser.parse(post.getContent()));
 
         // Tagging Entity에 Tag 목록 조회
-        List<String> tags = taggingRepository.findByPost(postId);
+        List<String> tags = taggingRepository.findByPost(post).stream()
+                .map(tagging -> tagging.getTag().getName())
+                .collect(Collectors.toList());
 
+        // 본인 게시글인지 확인
+        Long currentMemberId = member.getId();
+        Long writerId = post.getMember().getId();
+        boolean sameUser = (currentMemberId != null && currentMemberId.equals(writerId));
+
+        // 좋아요, 스크랩 확인
+        boolean liked = likesRepository.existsByMemberAndPost(member, post);
+        boolean scraped = scrapRepository.existsByMemberAndPost(member, post);
+
+        post.incrementViewCount();  // 조회수 증가
 
         PostDetailsRes postDetailsRes = PostDetailsRes.builder()
                 .postId(post.getId())
                 .mine(sameUser)
                 .title(post.getTitle())
+                .createdDate(post.getCreatedDate().toLocalDate())
                 .content(contentHtml)
                 .tagList(tags)
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .scrapCount(post.getScrapCount())
-//                .liked(post.get)
-//                .scraped()
+                .liked(liked)
+                .scraped(scraped)
                 .writerInfo(PostDetailsRes.WriterInfo.builder()
                         .avatarImage(post.getMember().getAvatarImage())
                         .name(post.getMember().getName())
                         .generation(post.getMember().getGeneration())
                         .part(post.getMember().getPart())
                         .build())
+                .commentList(commentDetails)
                 .build();
-
-
 
         return SuccessResponse.of(postDetailsRes);
     }

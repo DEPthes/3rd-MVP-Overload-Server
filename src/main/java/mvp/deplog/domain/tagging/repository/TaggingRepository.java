@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TaggingRepository extends JpaRepository<Tagging, Long> {
 
-    List<String> findByPost(Long postId);
+    List<Tagging> findByPost(Post post);
 }
