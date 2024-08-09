@@ -1,6 +1,8 @@
 package mvp.deplog.domain.post.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
@@ -23,15 +25,16 @@ public class PostDetailsRes {
     private String title;
 
     @Schema(type = "LocalDate", example = "2024-08-11", description = "게시글 작성 날짜입니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate createdDate;
 
     @Schema(type = "Sting", example = "**게시글 상세 내용**", description = "게시글 내용입니다. 마크다운 형식으로 반환됩니다.")
     private String content;
 
     @Schema(type = "List<String>", example = "[Spring, Java]", description = "태그 이름 리스트입니다.")
-    private List<String> tagList;
+    private List<String> tagNameList;
 
-    @Schema(type = "Integer", example = "0", description = "게시글 조회수입니다. 클릭 시 +1 됩니다.")
+    @Schema(type = "Integer", example = "0", description = "게시글 조회수입니다.")
     private Integer viewCount;
 
     @Schema(type = "Integer", example = "0", description = "게시글 좋아요 수입니다.")

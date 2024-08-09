@@ -116,6 +116,6 @@ public interface PostApi {
     @GetMapping("/details/{postId}")
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long post_id
+            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
     );
 }

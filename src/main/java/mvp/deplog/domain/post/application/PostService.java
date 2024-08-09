@@ -1,9 +1,7 @@
 package mvp.deplog.domain.post.application;
 
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.comment.domain.Comment;
 import mvp.deplog.domain.comment.domain.repository.CommentRepository;
-import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.domain.likes.domain.repository.LikesRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
@@ -25,11 +23,8 @@ import mvp.deplog.global.common.PageInfo;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.markdown.MarkdownUtil;
-import mvp.deplog.infrastructure.s3.S3FileUtil;
 import mvp.deplog.infrastructure.s3.application.FileService;
 import mvp.deplog.infrastructure.s3.dto.response.FileUrlRes;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -172,20 +167,14 @@ public class PostService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
-        // 게시글 내용 Markdown으로 변환
-        Parser parser = Parser.builder().build();
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
-        String contentHtml = renderer.render(parser.parse(post.getContent()));
-
         // Tagging Entity에 Tag 목록 조회
-        List<String> tags = taggingRepository.findByPost(post).stream()
+        List<String> tagNameList = taggingRepository.findByPost(post).stream()
                 .map(tagging -> tagging.getTag().getName())
                 .collect(Collectors.toList());
 
         // 본인 게시글인지 확인
-        Long currentMemberId = member.getId();
-        Long writerId = post.getMember().getId();
-        boolean sameUser = (currentMemberId != null && currentMemberId.equals(writerId));
+        Member writer = post.getMember();
+        boolean sameUser = member.equals(writer);
 
         // 좋아요, 스크랩 확인
         boolean liked = likesRepository.existsByMemberAndPost(member, post);
@@ -198,8 +187,8 @@ public class PostService {
                 .mine(sameUser)
                 .title(post.getTitle())
                 .createdDate(post.getCreatedDate().toLocalDate())
-                .content(contentHtml)
-                .tagList(tags)
+                .content(post.getContent())
+                .tagNameList(tagNameList)
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .scrapCount(post.getScrapCount())

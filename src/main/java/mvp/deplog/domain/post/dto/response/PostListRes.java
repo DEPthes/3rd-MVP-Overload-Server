@@ -28,7 +28,6 @@ public class PostListRes {
     private String previewContent;
 
     @Schema(type = "LocalDate", example = "2024-08-05", description= "게시글 작성 날짜입니다.")
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate createdDate;
 
