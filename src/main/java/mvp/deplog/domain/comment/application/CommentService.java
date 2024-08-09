@@ -70,7 +70,7 @@ public class CommentService {
             if(comment.getParentComment() == null){
                 CommentListRes commentListRes = CommentListRes.builder()
                         .commentId(comment.getId())
-                        .avatarImage() // 아바타 이미지 url
+//                        .avatarImage() // 아바타 이미지 url
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())
@@ -82,7 +82,7 @@ public class CommentService {
                 ReplyListRes replyListRes = ReplyListRes.builder()
                         .commentId(comment.getId())
                         .parentCommentId(comment.getParentComment().getId())
-                        .avatarImage()     // 아바타 이미지 url
+//                        .avatarImage()     // 아바타 이미지 url
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())
