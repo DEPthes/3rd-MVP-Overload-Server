@@ -102,6 +102,17 @@ public interface PostApi {
             @Parameter(description = "업로드할 이미지 파일 (Multipart form-data 형식)") @RequestPart(value = "postImage") MultipartFile multipartFile
     );
 
+    @Operation(summary = "게시글 상세 조회 API", description = "해당 아이디의 게시글을 상세 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostDetailsRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 상세 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @GetMapping("/details/{postId}")
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
