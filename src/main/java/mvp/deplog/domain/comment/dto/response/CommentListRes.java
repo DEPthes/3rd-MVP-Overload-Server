@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,4 +27,10 @@ public class CommentListRes {
 
     @Schema(type = "String", example = "**댓글 내용**", description = "댓글 내용을 반환합니다.")
     private String content;
+
+    @Schema(type = "Long", example = "1", description = "부모 댓글의 아이디를 반환합니다.")
+    private Long parentCommentId;
+
+    @Schema(type = "List<CommentListRes>", example = "List<CommentListRes> replyList(코드 200 참고)", description = "대댓글 리스트")
+    private List<CommentListRes> replyList;
 }

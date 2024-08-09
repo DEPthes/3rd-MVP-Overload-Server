@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -64,14 +66,22 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 아이디의 게시글이 없습니다: " + postId));
         List<Comment> commentList = commentRepository.findByPost(post);
 
-        List<CommentListRes> commentDetails = commentList.stream()
+        // parentId 별로 그룹핑
+        Map<Long, List<CommentListRes>> commentMapByParentId = commentList.stream()
                 .map(comment -> CommentListRes.builder()
                         .commentId(comment.getId())
                         .avatarImage(comment.getPost().getMember().getAvatarImage())
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())
+                        .parentCommentId(Optional.ofNullable(comment.getParentComment()).map(Comment::getId).orElse(0L))
                         .build())
+                .collect(Collectors.groupingBy(CommentListRes::getParentCommentId));
+
+        // 최상위 댓글을 필터링 해 대댓글 리스트 설정
+        List<CommentListRes> commentDetails = commentMapByParentId.getOrDefault(0L, List.of()).stream()
+                .peek(commentListRes -> commentListRes.setReplyList(Optional.ofNullable(commentMapByParentId.get(commentListRes.getCommentId()))
+                        .orElse(List.of())))
                 .collect(Collectors.toList());
 
         return SuccessResponse.of(commentDetails);
