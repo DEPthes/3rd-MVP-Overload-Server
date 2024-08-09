@@ -1,7 +1,6 @@
 package mvp.deplog.domain.post.application;
 
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.comment.domain.repository.CommentRepository;
 import mvp.deplog.domain.likes.domain.repository.LikesRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
@@ -46,7 +45,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final TaggingRepository taggingRepository;
-    private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
     private final ScrapRepository scrapRepository;
 

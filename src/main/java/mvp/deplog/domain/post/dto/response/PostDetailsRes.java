@@ -2,10 +2,8 @@ package mvp.deplog.domain.post.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.domain.member.domain.Part;
 
 import java.time.LocalDate;
