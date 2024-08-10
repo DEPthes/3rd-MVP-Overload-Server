@@ -6,7 +6,6 @@ import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
-import mvp.deplog.domain.post.dto.response.PostSearchRes;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -61,8 +60,8 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @GetMapping("/searches/{searchWord}")
-    public ResponseEntity<SuccessResponse<PostSearchRes>> getSearchPosts(@PathVariable("searchWord") String searchWord,
+    @GetMapping("/searches")
+    public ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(@RequestParam("searchWord") String searchWord,
                                                                          @RequestParam(defaultValue = "1") Integer page,
                                                                          @RequestParam(defaultValue = "10") Integer size){
         return ResponseEntity.ok(postService.getSearchPosts(searchWord, page-1, size));

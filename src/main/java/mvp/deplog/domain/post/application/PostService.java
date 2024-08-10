@@ -12,7 +12,6 @@ import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
-import mvp.deplog.domain.post.dto.response.PostSearchRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
 import mvp.deplog.domain.tag.domain.Tag;
@@ -204,7 +203,7 @@ public class PostService {
         return SuccessResponse.of(postDetailsRes);
     }
 
-    public SuccessResponse<PostSearchRes> getSearchPosts(String searchWord, int page, int size) {
+    public SuccessResponse<PageResponse> getSearchPosts(String searchWord, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts = postRepository.findByTitleContainingOrContentContaining(searchWord, searchWord, pageable);
 
@@ -220,11 +219,9 @@ public class PostService {
                 .scrapCount(post.getScrapCount())
                 .build());
 
-        PostSearchRes searchPostRes = PostSearchRes.builder()
-                .searchWord(searchWord)
-                .postList(searchPostList)
-                .build();
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, searchPostList.getContent());
 
-        return SuccessResponse.of(searchPostRes);
+        return SuccessResponse.of(pageResponse);
     }
 }
