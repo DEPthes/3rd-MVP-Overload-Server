@@ -6,6 +6,7 @@ import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
+import mvp.deplog.domain.post.dto.response.PostSearchRes;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
@@ -57,5 +61,13 @@ public class PostController implements PostApi {
     public ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                           @PathVariable("postId") Long postId){
         return ResponseEntity.ok(postService.getPostDetails(userDetails.getMember().getId(), postId));
+    }
+
+    @Override
+    @GetMapping("/searches/{searchWord}")
+    public ResponseEntity<SuccessResponse<PostSearchRes>> getSearchPosts(@PathVariable("searchWord") String searchWord,
+                                                                         @RequestParam(defaultValue = "1") Integer page,
+                                                                         @RequestParam(defaultValue = "10") Integer size){
+        return ResponseEntity.ok(postService.getSearchPosts(searchWord, page-1, size));
     }
 }

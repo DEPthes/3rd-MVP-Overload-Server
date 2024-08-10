@@ -14,4 +14,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.member.part IN :parts")
     Page<Post> findByMemberPart(@Param("parts") List<Part> partGroup, Pageable pageable);
+
+    Page<Post> findByTitleContainingOrContentContaining(String titleSearchWord, String contentSearchWord, Pageable pageable);
 }

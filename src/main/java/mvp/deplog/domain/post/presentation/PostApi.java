@@ -12,6 +12,7 @@ import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
+import mvp.deplog.domain.post.dto.response.PostSearchRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -117,5 +118,12 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @GetMapping("/searches/{searchWord}")
+    ResponseEntity<SuccessResponse<PostSearchRes>> getSearchPosts(
+            @Parameter(description = "검색어를 입력해주세요.", required = true) @PathVariable(value = "searchWord") String searchWord,
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
     );
 }
