@@ -202,4 +202,26 @@ public class PostService {
 
         return SuccessResponse.of(postDetailsRes);
     }
+
+    public SuccessResponse<PageResponse> getSearchPosts(String searchWord, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Post> posts = postRepository.findByTitleContainingOrContentContaining(searchWord, searchWord, pageable);
+
+        Page<PostListRes> searchPostList = posts.map(post -> PostListRes.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .previewContent(post.getPreviewContent())
+                .previewImage(post.getPreviewImage())
+                .createdDate(post.getCreatedDate().toLocalDate())
+                .name(post.getMember().getName())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .scrapCount(post.getScrapCount())
+                .build());
+
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, searchPostList.getContent());
+
+        return SuccessResponse.of(pageResponse);
+    }
 }

@@ -58,4 +58,12 @@ public class PostController implements PostApi {
                                                                           @PathVariable("postId") Long postId){
         return ResponseEntity.ok(postService.getPostDetails(userDetails.getMember().getId(), postId));
     }
+
+    @Override
+    @GetMapping("/searches")
+    public ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(@RequestParam("searchWord") String searchWord,
+                                                                         @RequestParam(defaultValue = "1") Integer page,
+                                                                         @RequestParam(defaultValue = "10") Integer size){
+        return ResponseEntity.ok(postService.getSearchPosts(searchWord, page-1, size));
+    }
 }

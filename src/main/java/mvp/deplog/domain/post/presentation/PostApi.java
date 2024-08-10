@@ -2,6 +2,7 @@ package mvp.deplog.domain.post.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,11 +48,11 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "게시글 목록 조회 실패",
@@ -68,11 +69,11 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "게시글 목록 조회 실패",
@@ -117,5 +118,27 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @Operation(summary = "게시글 검색 API", description = "해당 검색어가 포함된 게시글을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
+            ),
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 검색 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 검색 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/searches")
+    ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(
+            @Parameter(description = "검색어를 입력해주세요.", required = true) @RequestParam(value = "searchWord") String searchWord,
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
     );
 }
