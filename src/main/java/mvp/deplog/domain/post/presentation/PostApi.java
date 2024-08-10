@@ -120,6 +120,17 @@ public interface PostApi {
             @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
     );
 
+    @Operation(summary = "게시글 검색 API", description = "해당 검색어가 포함된 게시글을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 검색 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostSearchRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 검색 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @GetMapping("/searches/{searchWord}")
     ResponseEntity<SuccessResponse<PostSearchRes>> getSearchPosts(
             @Parameter(description = "검색어를 입력해주세요.", required = true) @PathVariable(value = "searchWord") String searchWord,
