@@ -228,7 +228,7 @@ public class PostService {
     public SuccessResponse<PageResponse> getSearchPostsByTag(String tagName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Tag tag = tagRepository.findByName(tagName)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 태그가 없습니다" + tagName));
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 태그가 없습니다: " + tagName));
 
         Page<Tagging> taggingPosts = taggingRepository.findByTag(tag, pageable);
 
