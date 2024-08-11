@@ -35,7 +35,7 @@ public class ScrapController implements ScrapApi {
     }
 
     @Override
-    @GetMapping("/posts")
+    @GetMapping
     public ResponseEntity<SuccessResponse<PageResponse>> getScrapPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                        @RequestParam(defaultValue = "1") Integer page,
                                                                        @RequestParam(defaultValue = "5") Integer size) {

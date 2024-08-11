@@ -70,7 +70,7 @@ public interface ScrapApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @GetMapping("/posts")
+    @GetMapping
     ResponseEntity<SuccessResponse<PageResponse>> getScrapPosts(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
