@@ -304,8 +304,6 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<CreatePostRes> createDraftPost(Member member, CreatePostReq createPostReq) {
-        validateTagName(createPostReq.getTagNameList());
-
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
@@ -319,8 +317,9 @@ public class PostService {
                 .stage(Stage.TEMP)
                 .build();
 
-        // 게시글 저장
         Post savePost = postRepository.save(post);
+
+        taggingRepository.deleteByPost(post);
 
         // 태그 저장 & Tagging 엔티티 연결
         for(String tagName : createPostReq.getTagNameList()) {
@@ -332,11 +331,53 @@ public class PostService {
                     .post(post)
                     .tag(tag)
                     .build();
+
             taggingRepository.save(tagging);
         }
 
         CreatePostRes createPostRes = CreatePostRes.builder()
                 .postId(savePost.getId())
+                .build();
+
+        return SuccessResponse.of(createPostRes);
+    }
+
+    @Transactional
+    public SuccessResponse<CreatePostRes> publishDraftPost(Long memberId, Long postId, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        if(!post.getMember().equals(member)) {
+            throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 발행할 수 없습니다.");
+        }
+
+        String content = createPostReq.getContent();
+        String previewContent = MarkdownUtil.extractPreviewContent(content);
+        String previewImage = MarkdownUtil.extractPreviewImage(content);
+
+        post.updatePost(createPostReq.getTitle(), content, previewContent, previewImage, Stage.PUBLISHED);
+
+        taggingRepository.deleteByPost(post);
+
+        // 태그 저장 & Tagging 엔티티 연결
+        for(String tagName : createPostReq.getTagNameList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+
+            Tagging tagging = Tagging.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+
+            taggingRepository.save(tagging);
+        }
+
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(postId)
                 .build();
 
         return SuccessResponse.of(createPostRes);

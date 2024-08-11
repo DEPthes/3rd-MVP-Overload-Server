@@ -91,4 +91,12 @@ public class PostController implements PostApi {
                 .status(HttpStatus.CREATED)
                 .body(postService.createDraftPost(userDetails.getMember(), createPostReq));
     }
+
+    @Override
+    @PutMapping("/publishing")
+    public ResponseEntity<SuccessResponse<CreatePostRes>> publishDraftPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                           @RequestParam(value = "postId") Long postId,
+                                                                           @RequestBody CreatePostReq createPostReq) {
+        return ResponseEntity.ok(postService.publishDraftPost(userDetails.getMember().getId(), postId, createPostReq));
+    }
 }
