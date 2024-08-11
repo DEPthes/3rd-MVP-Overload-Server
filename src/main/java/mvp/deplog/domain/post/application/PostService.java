@@ -35,7 +35,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<CreatePostRes> createPost(Member member, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
 
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
@@ -91,6 +94,15 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(createPostRes);
+    }
+
+    // 태그명 중복 검사 메서드
+    private void validateTagName(List<String> tagNameList) {
+        Set<String> tagNameSet = new HashSet<>();
+        for(String tagName : tagNameList) {
+            if(!tagNameSet.add(tagName))
+                throw new IllegalArgumentException("중복되는 태그명이 있습니다: " + tagName);
+        }
     }
 
     public SuccessResponse<PageResponse> getAllPosts(int page, int size) {
@@ -288,5 +300,45 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(message);
+    }
+
+    @Transactional
+    public SuccessResponse<CreatePostRes> createDraftPost(Member member, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
+
+        String content = createPostReq.getContent();
+        String previewContent = MarkdownUtil.extractPreviewContent(content);
+        String previewImage = MarkdownUtil.extractPreviewImage(content);
+
+        Post post = Post.builder()
+                .member(member)
+                .title(createPostReq.getTitle())
+                .content(content)
+                .previewContent(previewContent)
+                .previewImage(previewImage)
+                .stage(Stage.TEMP)
+                .build();
+
+        // 게시글 저장
+        Post savePost = postRepository.save(post);
+
+        // 태그 저장 & Tagging 엔티티 연결
+        for(String tagName : createPostReq.getTagNameList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() ->
+                            tagRepository.save(Tag.builder().name(tagName).build()));
+
+            Tagging tagging = Tagging.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+            taggingRepository.save(tagging);
+        }
+
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(savePost.getId())
+                .build();
+
+        return SuccessResponse.of(createPostRes);
     }
 }

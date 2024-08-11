@@ -41,7 +41,7 @@ public interface PostApi {
     @PostMapping
     ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
@@ -179,5 +179,11 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<Message>> deletePost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "삭제할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @PostMapping("/drafts")
+    ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 }

@@ -82,4 +82,13 @@ public class PostController implements PostApi {
                                                                @PathVariable(value = "postId") Long postId) {
         return ResponseEntity.ok(postService.deletePost(userDetails.getMember().getId(), postId));
     }
+
+    @Override
+    @PostMapping("/drafts")
+    public ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                          @RequestBody CreatePostReq createPostReq) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(postService.createDraftPost(userDetails.getMember(), createPostReq));
+    }
 }
