@@ -17,4 +17,6 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     Optional<Scrap> findByMemberAndPost(Member member, Post post);
 
     Page<Scrap> findByMember(Member member, Pageable pageable);
+
+    void deleteByPost(Post post);
 }

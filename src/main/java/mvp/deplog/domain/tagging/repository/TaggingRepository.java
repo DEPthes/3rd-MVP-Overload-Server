@@ -12,5 +12,8 @@ import java.util.List;
 public interface TaggingRepository extends JpaRepository<Tagging, Long> {
 
     List<Tagging> findByPost(Post post);
+
     Page<Tagging> findByTag(Tag tag, Pageable pageable);
+
+    void deleteByPost(Post post);
 }
