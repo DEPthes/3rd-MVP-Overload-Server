@@ -77,7 +77,7 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @DeleteMapping("{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<SuccessResponse<Message>> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @PathVariable(value = "postId") Long postId) {
         return ResponseEntity.ok(postService.deletePost(userDetails.getMember().getId(), postId));
