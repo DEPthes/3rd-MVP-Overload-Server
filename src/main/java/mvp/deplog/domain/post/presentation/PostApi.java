@@ -163,4 +163,21 @@ public interface PostApi {
             @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
             @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
     );
+
+    @Operation(summary = "게시글 삭제 API", description = "해당 아이디의 게시글을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 삭제 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 삭제 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @DeleteMapping("/{postId}")
+    ResponseEntity<SuccessResponse<Message>> deletePost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "삭제할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
 }

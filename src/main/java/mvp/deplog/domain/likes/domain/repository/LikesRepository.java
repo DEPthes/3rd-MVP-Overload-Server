@@ -12,4 +12,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     boolean existsByMemberAndPost(Member member, Post post);
 
     Optional<Likes> findByMemberAndPost(Member member, Post post);
+
+    void deleteByPost(Post post);
 }

@@ -6,6 +6,7 @@ import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
+import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
@@ -73,5 +74,12 @@ public class PostController implements PostApi {
                                                                                  @RequestParam(defaultValue = "1") Integer page,
                                                                                  @RequestParam(defaultValue = "10") Integer size) {
         return ResponseEntity.ok(postService.getSearchPostsByTag(tagName, page-1, size));
+    }
+
+    @Override
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<SuccessResponse<Message>> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                               @PathVariable(value = "postId") Long postId) {
+        return ResponseEntity.ok(postService.deletePost(userDetails.getMember().getId(), postId));
     }
 }

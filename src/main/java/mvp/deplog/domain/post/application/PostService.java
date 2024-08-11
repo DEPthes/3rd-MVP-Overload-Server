@@ -1,6 +1,7 @@
 package mvp.deplog.domain.post.application;
 
 import lombok.RequiredArgsConstructor;
+import mvp.deplog.domain.comment.domain.repository.CommentRepository;
 import mvp.deplog.domain.likes.domain.repository.LikesRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
@@ -13,11 +14,13 @@ import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
+import mvp.deplog.domain.post.exception.UnauthorizedException;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
 import mvp.deplog.domain.tag.domain.Tag;
 import mvp.deplog.domain.tag.domain.repository.TagRepository;
 import mvp.deplog.domain.tagging.Tagging;
 import mvp.deplog.domain.tagging.repository.TaggingRepository;
+import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageInfo;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -50,6 +53,7 @@ public class PostService {
 
     private static final String DIRNAME = "post";
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public SuccessResponse<CreatePostRes> createPost(Member member, CreatePostReq createPostReq) {
@@ -228,7 +232,7 @@ public class PostService {
     public SuccessResponse<PageResponse> getSearchPostsByTag(String tagName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Tag tag = tagRepository.findByName(tagName)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 태그가 없습니다" + tagName));
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 태그가 없습니다: " + tagName));
 
         Page<Tagging> taggingPosts = taggingRepository.findByTag(tag, pageable);
 
@@ -251,5 +255,38 @@ public class PostService {
         PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, searchPostList.getContent());
 
         return SuccessResponse.of(pageResponse);
+    }
+
+    @Transactional
+    public SuccessResponse<Message> deletePost(Long memberId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        if(!post.getMember().equals(member)) {
+            throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 삭제할 수 없습니다.");
+        }
+
+        // 게시글 내 댓글 삭제
+        commentRepository.deleteByPost(post);
+
+        // 게시글 내 태그 삭제
+        taggingRepository.deleteByPost(post);
+
+        // 게시글 스크랩 내용 삭제
+        scrapRepository.deleteByPost(post);
+
+        // 게시글 좋아요 내용 삭제
+        likesRepository.deleteByPost(post);
+
+        // 게시글 삭제
+        postRepository.delete(post);
+
+        Message message = Message.builder()
+                .message("게시글 삭제가 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
     }
 }
