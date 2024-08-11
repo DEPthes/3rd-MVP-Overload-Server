@@ -3,6 +3,7 @@ package mvp.deplog.domain.scrap.presentation;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.scrap.application.ScrapService;
 import mvp.deplog.global.common.Message;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,13 @@ public class ScrapController implements ScrapApi {
     public ResponseEntity<SuccessResponse<Message>> deleteScrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                     @PathVariable(value = "postId") Long postId){
         return ResponseEntity.ok(scrapService.deleteScrapPost(userDetails.getMember().getId(), postId));
+    }
+
+    @Override
+    @GetMapping("/posts")
+    public ResponseEntity<SuccessResponse<PageResponse>> getScrapPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                       @RequestParam(defaultValue = "1") Integer page,
+                                                                       @RequestParam(defaultValue = "5") Integer size) {
+        return ResponseEntity.ok(scrapService.getScrapPosts(userDetails.getMember().getId(), page-1, size));
     }
 }
