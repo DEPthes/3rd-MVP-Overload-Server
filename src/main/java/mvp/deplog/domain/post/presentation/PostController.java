@@ -66,4 +66,12 @@ public class PostController implements PostApi {
                                                                          @RequestParam(defaultValue = "10") Integer size){
         return ResponseEntity.ok(postService.getSearchPosts(searchWord, page-1, size));
     }
+
+    @Override
+    @GetMapping("/searches/tags")
+    public ResponseEntity<SuccessResponse<PageResponse>> getSearchPostsByTag(@RequestParam("tagName") String tagName,
+                                                                             @RequestParam(defaultValue = "1") Integer page,
+                                                                             @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(postService.getSearchPostsByTag(tagName, page-1, size));
+    }
 }
