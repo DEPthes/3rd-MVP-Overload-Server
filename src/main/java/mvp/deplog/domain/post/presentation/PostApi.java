@@ -142,7 +142,22 @@ public interface PostApi {
             @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
     );
 
-    @GetMapping("/searches")
+    @Operation(summary = "태그로 게시글 검색 API", description = "해당 태그가 포함된 게시글을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
+            ),
+            @ApiResponse(
+                    responseCode = "200", description = "태그로 게시글 검색 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "태그로 게시글 검색 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/searches/tags")
     ResponseEntity<SuccessResponse<PageResponse>> getSearchPostsByTag(
             @Parameter(description = "태그명을 입력해주세요.", required = true) @RequestParam(value = "tagName") String tagName,
             @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
