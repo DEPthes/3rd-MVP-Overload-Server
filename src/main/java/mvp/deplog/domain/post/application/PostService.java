@@ -224,4 +224,32 @@ public class PostService {
 
         return SuccessResponse.of(pageResponse);
     }
+
+    public SuccessResponse<PageResponse> getSearchPostsByTag(String tagName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Tag tag = tagRepository.findByName(tagName)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 태그가 없습니다" + tagName));
+
+        Page<Tagging> taggingPosts = taggingRepository.findByTag(tag, pageable);
+
+        Page<PostListRes> searchPostList = taggingPosts.map(tagging -> {
+            Post post = tagging.getPost();
+            return PostListRes.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .previewContent(post.getPreviewContent())
+                    .previewImage(post.getPreviewImage())
+                    .createdDate(post.getCreatedDate().toLocalDate())
+                    .name(post.getMember().getName())
+                    .viewCount(post.getViewCount())
+                    .likeCount(post.getLikeCount())
+                    .scrapCount(post.getScrapCount())
+                    .build();
+        });
+
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, taggingPosts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, searchPostList.getContent());
+
+        return SuccessResponse.of(pageResponse);
+    }
 }
