@@ -1,6 +1,5 @@
 package mvp.deplog.domain.post.domain.repository;
 
-import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import org.springframework.data.domain.Page;
@@ -17,6 +16,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByMemberPart(@Param("parts") List<Part> partGroup, Pageable pageable);
 
     Page<Post> findByTitleContainingOrContentContaining(String titleSearchWord, String contentSearchWord, Pageable pageable);
-
-    Post findByMember(Member member);
 }
