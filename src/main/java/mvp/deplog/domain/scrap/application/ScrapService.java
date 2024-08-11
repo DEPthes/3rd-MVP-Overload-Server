@@ -5,10 +5,17 @@ import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.scrap.domain.Scrap;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
 import mvp.deplog.global.common.Message;
+import mvp.deplog.global.common.PageInfo;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,5 +70,32 @@ public class ScrapService {
                 .build();
 
         return SuccessResponse.of(message);
+    }
+
+    public SuccessResponse<PageResponse> getScrapPosts(Long memberId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+        Page<Scrap> scrapPosts = scrapRepository.findByMember(member, pageable);
+
+        Page<PostListRes> scrapPostList = scrapPosts.map(scrap -> {
+            Post post = scrap.getPost();
+            return PostListRes.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .previewContent(post.getPreviewContent())
+                    .previewImage(post.getPreviewImage())
+                    .createdDate(post.getCreatedDate().toLocalDate())
+                    .name(post.getMember().getName())
+                    .viewCount(post.getViewCount())
+                    .likeCount(post.getLikeCount())
+                    .scrapCount(post.getScrapCount())
+                    .build();
+        });
+
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, scrapPosts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, scrapPostList.getContent());
+
+        return SuccessResponse.of(pageResponse);
     }
 }
