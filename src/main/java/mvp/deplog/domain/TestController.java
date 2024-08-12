@@ -22,7 +22,11 @@ public class TestController {
                 "\n getAuthorities : " + authentication.getAuthorities() +
                 "\n getDetails : " + authentication.getDetails() +
                 "\n getCredentials : " + authentication.getCredentials() +
-                "\n HELLO !! ";
+                "\n HELLO !! "
+//                "\n userDetails.getMember() : " + userDetails.getMember() +
+//                "\n userDetails.getUsername() : " + userDetails.getUsername() +
+//                "\n userDetails.getAuthorities() : " + userDetails.getAuthorities()
+                ;
 
 //        Member member = userDetails.getMember();
 //        return "Test Success !" +
