@@ -2,14 +2,17 @@ package mvp.deplog.domain.post.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.member.domain.Part;
-import mvp.deplog.domain.post.dto.request.PostReq;
+import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
+import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
@@ -39,18 +42,18 @@ public interface PostApi {
     @PostMapping
     ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody PostReq postReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "게시글 목록 조회 실패",
@@ -67,11 +70,11 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "200", description = "게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostListRes.class))}
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "게시글 목록 조회 실패",
@@ -99,5 +102,122 @@ public interface PostApi {
     @PostMapping("/uploadImages")
     ResponseEntity<SuccessResponse<FileUrlRes>> uploadImage(
             @Parameter(description = "업로드할 이미지 파일 (Multipart form-data 형식)") @RequestPart(value = "postImage") MultipartFile multipartFile
+    );
+
+    @Operation(summary = "게시글 상세 조회 API", description = "해당 아이디의 게시글을 상세 조회합니다. 회원/비회원에 따라 응답 값이 달라집니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200 ", description = "비회원 - 게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AnonymousPostDetailRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "200  ", description = "회원 - 게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberPostDetailRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400   ", description = "게시글 상세 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/details/{postId}")
+    ResponseEntity<SuccessResponse<?>> getPostDetail(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @Operation(summary = "게시글 검색 API", description = "해당 검색어가 포함된 게시글을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
+            ),
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 검색 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 검색 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/searches")
+    ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(
+            @Parameter(description = "검색어를 입력해주세요.", required = true) @RequestParam(value = "searchWord") String searchWord,
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
+    );
+
+    @Operation(summary = "태그로 게시글 검색 API", description = "해당 태그가 포함된 게시글을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "0", description = "조회 성공 - 페이징 dataList 구성",
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PostListRes.class)))}
+            ),
+            @ApiResponse(
+                    responseCode = "200", description = "태그로 게시글 검색 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PageResponse.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "태그로 게시글 검색 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping("/searches/tags")
+    ResponseEntity<SuccessResponse<PageResponse>> getSearchPostsByTagName(
+            @Parameter(description = "태그명을 입력해주세요.", required = true) @RequestParam(value = "tagName") String tagName,
+            @Parameter(description = "조회할 페이지의 번호를 입력해주세요. **page는 1부터 시작합니다**", required = true) @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "한 페이지 당 최대 항목 개수를 입력해주세요. 기본값은 10입니다.", required = true) @RequestParam(value = "size", defaultValue = "10") Integer size
+    );
+
+    @Operation(summary = "게시글 삭제 API", description = "해당 아이디의 게시글을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 삭제 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 삭제 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @DeleteMapping("/{postId}")
+    ResponseEntity<SuccessResponse<Message>> deletePost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "삭제할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @Operation(summary = "게시글 임시 저장 API", description = "해당 아이디의 게시글을 임시 저장합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201", description = "게시글 임시 저장 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreatePostRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 임시 저장 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PostMapping("/drafts")
+    ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+    );
+
+    @Operation(summary = "임시 저장 게시글 발행 API", description = "해당 아이디의 임시 저장 게시글을 벌행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "임시 저장 게시글 발행 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreatePostRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "임시 저장 게시글 발행 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PutMapping("/publishing")
+    ResponseEntity<SuccessResponse<CreatePostRes>> publishDraftPost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @RequestParam(value = "postId") Long postId,
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 }

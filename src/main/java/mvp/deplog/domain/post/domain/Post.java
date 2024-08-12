@@ -64,6 +64,14 @@ public class Post extends BaseEntity {
         this.stage = stage;
     }
 
+    // 게시글 수정
+    public void updatePost(String title, String content, String previewContent, String previewImage, Stage stage) {
+        this.title = title;
+        this.content = content;
+        this.previewContent = previewContent;
+        this.previewImage = previewImage;
+        this.stage = stage;
+    }
 
     // 스크랩 수 증가
     public void incrementScrapCount() {
@@ -84,5 +92,9 @@ public class Post extends BaseEntity {
         if(this.likeCount > 0){
             this.likeCount--;
         }
+    }
+    // 조회수 증가
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 }

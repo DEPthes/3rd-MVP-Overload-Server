@@ -2,12 +2,10 @@ package mvp.deplog.domain.post.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -28,7 +26,6 @@ public class PostListRes {
     private String previewContent;
 
     @Schema(type = "LocalDate", example = "2024-08-05", description= "게시글 작성 날짜입니다.")
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate createdDate;
 
