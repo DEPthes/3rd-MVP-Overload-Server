@@ -34,7 +34,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,6 +57,7 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<CreatePostRes> createPost(Member member, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
 
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
@@ -89,6 +92,15 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(createPostRes);
+    }
+
+    // 태그명 중복 검사 메서드
+    private void validateTagName(List<String> tagNameList) {
+        Set<String> tagNameSet = new HashSet<>();
+        for(String tagName : tagNameList) {
+            if(!tagNameSet.add(tagName))
+                throw new IllegalArgumentException("중복되는 태그명이 있습니다: " + tagName);
+        }
     }
 
     public SuccessResponse<PageResponse> getAllPosts(int page, int size) {
@@ -241,5 +253,86 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(message);
+    }
+
+    @Transactional
+    public SuccessResponse<CreatePostRes> createDraftPost(Member member, CreatePostReq createPostReq) {
+        String content = createPostReq.getContent();
+        String previewContent = MarkdownUtil.extractPreviewContent(content);
+        String previewImage = MarkdownUtil.extractPreviewImage(content);
+
+        Post post = Post.builder()
+                .member(member)
+                .title(createPostReq.getTitle())
+                .content(content)
+                .previewContent(previewContent)
+                .previewImage(previewImage)
+                .stage(Stage.TEMP)
+                .build();
+
+        Post savePost = postRepository.save(post);
+
+        taggingRepository.deleteByPost(post);
+
+        // 태그 저장 & Tagging 엔티티 연결
+        for(String tagName : createPostReq.getTagNameList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() ->
+                            tagRepository.save(Tag.builder().name(tagName).build()));
+
+            Tagging tagging = Tagging.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+
+            taggingRepository.save(tagging);
+        }
+
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(savePost.getId())
+                .build();
+
+        return SuccessResponse.of(createPostRes);
+    }
+
+    @Transactional
+    public SuccessResponse<CreatePostRes> publishDraftPost(Long memberId, Long postId, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        if(!post.getMember().equals(member)) {
+            throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 발행할 수 없습니다.");
+        }
+
+        String content = createPostReq.getContent();
+        String previewContent = MarkdownUtil.extractPreviewContent(content);
+        String previewImage = MarkdownUtil.extractPreviewImage(content);
+
+        post.updatePost(createPostReq.getTitle(), content, previewContent, previewImage, Stage.PUBLISHED);
+
+        taggingRepository.deleteByPost(post);
+
+        // 태그 저장 & Tagging 엔티티 연결
+        for(String tagName : createPostReq.getTagNameList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+
+            Tagging tagging = Tagging.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
+
+            taggingRepository.save(tagging);
+        }
+
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(postId)
+                .build();
+
+        return SuccessResponse.of(createPostRes);
     }
 }
