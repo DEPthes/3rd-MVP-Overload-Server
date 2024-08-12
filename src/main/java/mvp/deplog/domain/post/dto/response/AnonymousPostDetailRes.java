@@ -11,13 +11,10 @@ import java.util.List;
 
 @Data
 @Builder
-public class PostDetailsRes {
+public class AnonymousPostDetailRes {
 
     @Schema(type = "Long", example = "1", description = "게시글 아이디입니다.")
     private Long postId;
-
-    @Schema(type = "Boolean", example = "true", description = "본인 게시글이면 true, 아니면 false를 반환합니다.")
-    private Boolean mine;
 
     @Schema(type = "String", example = "게시글 제목", description = "게시글 제목입니다.")
     private String title;
@@ -38,17 +35,11 @@ public class PostDetailsRes {
     @Schema(type = "Integer", example = "0", description = "게시글 좋아요 수입니다.")
     private Integer likeCount;
 
-    @Schema(type = "Boolean", example = "true", description = "좋아요를 눌렀다면 true, 아니면 false를 반환합니다.")
-    private Boolean liked;
-
     @Schema(type = "Integer", example = "0", description = "게시글 스크랩 수입니다.")
     private Integer scrapCount;
 
-    @Schema(type = "Boolean", example = "true", description = "스크랩을 했다면 true, 아니면 false를 반환합니다.")
-    private Boolean scraped;
-
     @Schema(type = "WriterInfo", description = "게시글 작성자 처리에 필요한 정보")
-    private WriterInfo writerInfo;
+    private AnonymousPostDetailRes.WriterInfo writerInfo;
 
     @Data
     @Builder

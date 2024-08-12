@@ -11,7 +11,6 @@ import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
-import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.post.exception.UnauthorizedException;
@@ -36,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -160,51 +158,6 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(fileUrlRes);
-    }
-
-    @Transactional
-    public SuccessResponse<PostDetailsRes> getPostDetails(Long memberId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
-
-        // Tagging Entity에 Tag 목록 조회
-        List<String> tagNameList = taggingRepository.findByPost(post).stream()
-                .map(tagging -> tagging.getTag().getName())
-                .collect(Collectors.toList());
-
-        // 본인 게시글인지 확인
-        Member writer = post.getMember();
-        boolean sameUser = member.equals(writer);
-
-        // 좋아요, 스크랩 확인
-        boolean liked = likesRepository.existsByMemberAndPost(member, post);
-        boolean scraped = scrapRepository.existsByMemberAndPost(member, post);
-
-        post.incrementViewCount();  // 조회수 증가
-
-        PostDetailsRes postDetailsRes = PostDetailsRes.builder()
-                .postId(post.getId())
-                .mine(sameUser)
-                .title(post.getTitle())
-                .createdDate(post.getCreatedDate().toLocalDate())
-                .content(post.getContent())
-                .tagNameList(tagNameList)
-                .viewCount(post.getViewCount())
-                .likeCount(post.getLikeCount())
-                .scrapCount(post.getScrapCount())
-                .liked(liked)
-                .scraped(scraped)
-                .writerInfo(PostDetailsRes.WriterInfo.builder()
-                        .avatarImage(post.getMember().getAvatarImage())
-                        .name(post.getMember().getName())
-                        .generation(post.getMember().getGeneration())
-                        .part(post.getMember().getPart())
-                        .build())
-                .build();
-
-        return SuccessResponse.of(postDetailsRes);
     }
 
     public SuccessResponse<PageResponse> getSearchPosts(String searchWord, int page, int size) {
