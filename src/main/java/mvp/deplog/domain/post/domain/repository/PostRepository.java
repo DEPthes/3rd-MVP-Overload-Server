@@ -1,6 +1,5 @@
 package mvp.deplog.domain.post.domain.repository;
 
-import jakarta.persistence.QueryHint;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -22,7 +20,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE (p.title LIKE %:titleSearchWord% OR p.content LIKE %:contentSearchWord%) " +
             "AND p.stage = 'PUBLISHED'")
-    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "false"))
     Page<Post> findByTitleContainingOrContentContaining(@Param("titleSearchWord") String titleSearchWord,
                                                         @Param("contentSearchWord") String contentSearchWord,
                                                         Pageable pageable);
