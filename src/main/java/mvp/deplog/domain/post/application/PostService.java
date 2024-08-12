@@ -11,6 +11,7 @@ import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.DraftListRes;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
@@ -381,5 +382,22 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(createPostRes);
+    }
+
+    public SuccessResponse<List<DraftListRes>> getAllDraftPosts(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        List<Post> posts = postRepository.findByMemberAndStageOrderByCreatedDateDesc(member, Stage.TEMP);
+
+        List<DraftListRes> draftListRes = posts.stream()
+                .map(post -> DraftListRes.builder()
+                        .id(post.getId())
+                        .title(post.getTitle())
+                        .createdDate(post.getCreatedDate().toLocalDate())
+                        .build())
+                .collect(Collectors.toList());
+
+        return SuccessResponse.of(draftListRes);
     }
 }

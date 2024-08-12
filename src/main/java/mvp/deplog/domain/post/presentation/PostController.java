@@ -5,6 +5,7 @@ import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.DraftListRes;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -98,5 +101,11 @@ public class PostController implements PostApi {
                                                                            @RequestParam(value = "postId") Long postId,
                                                                            @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.publishDraftPost(userDetails.getMember().getId(), postId, createPostReq));
+    }
+
+    @Override
+    @GetMapping("/drafts")
+    public ResponseEntity<SuccessResponse<List<DraftListRes>>> getAllDraftPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(postService.getAllDraftPosts(userDetails.getMember().getId()));
     }
 }

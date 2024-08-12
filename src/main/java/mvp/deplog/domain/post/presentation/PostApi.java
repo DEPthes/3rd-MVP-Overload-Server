@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.DraftListRes;
 import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
@@ -23,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "Post API", description = "게시글 관련 API입니다.")
 public interface PostApi {
@@ -214,5 +217,10 @@ public interface PostApi {
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @RequestParam(value = "postId") Long postId,
             @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+    );
+
+    @GetMapping("/drafts")
+    ResponseEntity<SuccessResponse<List<DraftListRes>>> getAllDraftPosts(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 }
