@@ -219,6 +219,17 @@ public interface PostApi {
             @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 
+    @Operation(summary = "임시 저장 게시글 목록 조회 API", description = "해당 아이디의 임시 저장 게시글 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "임시 저장 게시글 목록 조회 성공",
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DraftListRes.class)))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "임시 저장 게시글 목록 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @GetMapping("/drafts")
     ResponseEntity<SuccessResponse<List<DraftListRes>>> getAllDraftPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
