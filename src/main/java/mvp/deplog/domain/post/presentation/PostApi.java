@@ -41,7 +41,7 @@ public interface PostApi {
     @PostMapping
     ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 PostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
@@ -179,5 +179,40 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<Message>> deletePost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "삭제할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId
+    );
+
+    @Operation(summary = "게시글 임시 저장 API", description = "해당 아이디의 게시글을 임시 저장합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201", description = "게시글 임시 저장 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreatePostRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 임시 저장 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PostMapping("/drafts")
+    ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+    );
+
+    @Operation(summary = "임시 저장 게시글 발행 API", description = "해당 아이디의 임시 저장 게시글을 벌행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "임시 저장 게시글 발행 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreatePostRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "임시 저장 게시글 발행 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @PutMapping("/publishing")
+    ResponseEntity<SuccessResponse<CreatePostRes>> publishDraftPost(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @RequestParam(value = "postId") Long postId,
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 }
