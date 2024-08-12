@@ -35,7 +35,11 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final String[] WHITE_LIST = {
-            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/test", "/mails/**", "/verification-email"
+            "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+            "/auth/**",
+            "/test",
+            "/mails/**", "/verification-email",
+            "/posts/details/**"
     };
 
     @Bean
@@ -50,6 +54,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(WHITE_LIST).permitAll()
+//                                .requestMatchers("/test").hasAnyRole("ADMIN", "MEMBER")
                 .anyRequest().authenticated()
                 )
 
