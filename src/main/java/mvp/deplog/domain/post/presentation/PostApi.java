@@ -13,7 +13,7 @@ import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
-import mvp.deplog.domain.post.dto.response.DraftListRes;
+import mvp.deplog.domain.post.dto.response.TempListRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
@@ -200,8 +200,8 @@ public interface PostApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @PostMapping("/drafts")
-    ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(
+    @PostMapping("/temps")
+    ResponseEntity<SuccessResponse<CreatePostRes>> createTempPost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
@@ -218,7 +218,7 @@ public interface PostApi {
             )
     })
     @PutMapping("/publishing")
-    ResponseEntity<SuccessResponse<CreatePostRes>> publishDraftPost(
+    ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @RequestParam(value = "postId") Long postId,
             @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
@@ -228,15 +228,15 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "임시 저장 게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DraftListRes.class)))}
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TempListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "임시 저장 게시글 목록 조회 실패",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @GetMapping("/drafts")
-    ResponseEntity<SuccessResponse<List<DraftListRes>>> getAllDraftPosts(
+    @GetMapping("/temps")
+    ResponseEntity<SuccessResponse<List<TempListRes>>> getAllTempPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 }

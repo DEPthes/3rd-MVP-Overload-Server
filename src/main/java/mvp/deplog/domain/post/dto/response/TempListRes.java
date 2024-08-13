@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class DraftListRes {
+public class TempListRes {
 
     @Schema(type = "Long", example = "1", description = "임시 저장 게시글 아이디입니다.")
     private Long id;
