@@ -2,11 +2,12 @@ package mvp.deplog.domain.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Part;
+import mvp.deplog.domain.post.application.PostDetailService;
+import mvp.deplog.domain.post.application.PostDetailServiceFactory;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.DraftListRes;
-import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -26,6 +27,7 @@ import java.util.List;
 public class PostController implements PostApi {
 
     private final PostService postService;
+    private final PostDetailServiceFactory postDetailServiceFactory;
 
     @Override
     @PostMapping
@@ -58,9 +60,10 @@ public class PostController implements PostApi {
 
     @Override
     @GetMapping("/details/{postId}")
-    public ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<SuccessResponse<?>> getPostDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                           @PathVariable("postId") Long postId){
-        return ResponseEntity.ok(postService.getPostDetails(userDetails.getMember().getId(), postId));
+        PostDetailService<?> postDetailService = postDetailServiceFactory.find(userDetails);
+        return ResponseEntity.ok(postDetailService.getPostDetail(userDetails, postId));
     }
 
     @Override

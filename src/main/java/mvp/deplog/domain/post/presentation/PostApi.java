@@ -9,10 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mvp.deplog.domain.member.domain.Part;
+import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
 import mvp.deplog.domain.post.dto.response.DraftListRes;
-import mvp.deplog.domain.post.dto.response.PostDetailsRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
@@ -106,19 +107,23 @@ public interface PostApi {
             @Parameter(description = "업로드할 이미지 파일 (Multipart form-data 형식)") @RequestPart(value = "postImage") MultipartFile multipartFile
     );
 
-    @Operation(summary = "게시글 상세 조회 API", description = "해당 아이디의 게시글을 상세 조회합니다.")
+    @Operation(summary = "게시글 상세 조회 API", description = "해당 아이디의 게시글을 상세 조회합니다. 회원/비회원에 따라 응답 값이 달라집니다.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200", description = "게시글 상세 조회 성공",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostDetailsRes.class))}
+                    responseCode = "200 ", description = "비회원 - 게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AnonymousPostDetailRes.class))}
             ),
             @ApiResponse(
-                    responseCode = "400", description = "게시글 상세 조회 실패",
+                    responseCode = "200  ", description = "회원 - 게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberPostDetailRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400   ", description = "게시글 상세 조회 실패",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
     @GetMapping("/details/{postId}")
-    ResponseEntity<SuccessResponse<PostDetailsRes>> getPostDetails(
+    ResponseEntity<SuccessResponse<?>> getPostDetail(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "게시글의 번호(아이디)를 입력해주세요.", required = true) @PathVariable(value = "postId") Long postId
     );
