@@ -102,4 +102,12 @@ public class PostController implements PostApi {
                                                                            @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.publishDraftPost(userDetails.getMember().getId(), postId, createPostReq));
     }
+
+    @Override
+    @PatchMapping("/edits/{postId}")
+    public ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                      @PathVariable(value = "postId") Long postId,
+                                                                      @RequestBody CreatePostReq createPostReq) {
+        return ResponseEntity.ok(postService.modifyPost(userDetails.getMember().getId(), postId, createPostReq));
+    }
 }
