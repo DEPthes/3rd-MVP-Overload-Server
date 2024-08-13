@@ -116,7 +116,7 @@ public class PostController implements PostApi {
     @PatchMapping("/edits/{postId}")
     public ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                       @PathVariable(value = "postId") Long postId,
-                                                                      @RequestBody(required = false) CreatePostReq createPostReq) {
+                                                                      @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.modifyPost(userDetails.getMember().getId(), postId, createPostReq));
     }
 }

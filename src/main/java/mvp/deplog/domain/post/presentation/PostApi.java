@@ -255,6 +255,6 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "수정할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId,
-            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = false) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 }
