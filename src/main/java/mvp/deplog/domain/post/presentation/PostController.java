@@ -7,6 +7,7 @@ import mvp.deplog.domain.post.application.PostDetailServiceFactory;
 import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.TempListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -87,20 +90,26 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @PostMapping("/drafts")
-    public ResponseEntity<SuccessResponse<CreatePostRes>> createDraftPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    @PostMapping("/temps")
+    public ResponseEntity<SuccessResponse<CreatePostRes>> createTempPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                           @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(postService.createDraftPost(userDetails.getMember(), createPostReq));
+                .body(postService.createTempPost(userDetails.getMember(), createPostReq));
     }
 
     @Override
     @PutMapping("/publishing")
-    public ResponseEntity<SuccessResponse<CreatePostRes>> publishDraftPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                            @RequestParam(value = "postId") Long postId,
                                                                            @RequestBody CreatePostReq createPostReq) {
-        return ResponseEntity.ok(postService.publishDraftPost(userDetails.getMember().getId(), postId, createPostReq));
+        return ResponseEntity.ok(postService.publishTempPost(userDetails.getMember().getId(), postId, createPostReq));
+    }
+
+    @Override
+    @GetMapping("/temps")
+    public ResponseEntity<SuccessResponse<List<TempListRes>>> getAllTempPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(postService.getAllTempPosts(userDetails.getMember().getId()));
     }
 
     @Override

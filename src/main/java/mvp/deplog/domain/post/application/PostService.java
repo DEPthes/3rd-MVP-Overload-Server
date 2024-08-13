@@ -11,6 +11,7 @@ import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
+import mvp.deplog.domain.post.dto.response.TempListRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.post.exception.UnauthorizedException;
@@ -37,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -256,7 +258,7 @@ public class PostService {
     }
 
     @Transactional
-    public SuccessResponse<CreatePostRes> createDraftPost(Member member, CreatePostReq createPostReq) {
+    public SuccessResponse<CreatePostRes> createTempPost(Member member, CreatePostReq createPostReq) {
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
@@ -296,7 +298,7 @@ public class PostService {
     }
 
     @Transactional
-    public SuccessResponse<CreatePostRes> publishDraftPost(Long memberId, Long postId, CreatePostReq createPostReq) {
+    public SuccessResponse<CreatePostRes> publishTempPost(Long memberId, Long postId, CreatePostReq createPostReq) {
         validateTagName(createPostReq.getTagNameList());
 
         Post post = postRepository.findById(postId)
@@ -334,6 +336,23 @@ public class PostService {
                 .build();
 
         return SuccessResponse.of(createPostRes);
+    }
+
+    public SuccessResponse<List<TempListRes>> getAllTempPosts(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        List<Post> posts = postRepository.findByMemberAndStageOrderByCreatedDateDesc(member, Stage.TEMP);
+
+        List<TempListRes> TempListRes = posts.stream()
+                .map(post -> mvp.deplog.domain.post.dto.response.TempListRes.builder()
+                        .id(post.getId())
+                        .title(post.getTitle())
+                        .createdDate(post.getCreatedDate().toLocalDate())
+                        .build())
+                .collect(Collectors.toList());
+
+        return SuccessResponse.of(TempListRes);
     }
 
     @Transactional
