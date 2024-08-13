@@ -228,7 +228,7 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "임시 저장 게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json",schema = @Schema(implementation = TempListRes.class))}
+                    content = {@Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TempListRes.class)))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "임시 저장 게시글 목록 조회 실패",
