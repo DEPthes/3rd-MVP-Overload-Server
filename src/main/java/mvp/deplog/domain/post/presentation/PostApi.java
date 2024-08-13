@@ -228,7 +228,7 @@ public interface PostApi {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "임시 저장 게시글 목록 조회 성공",
-                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TempListRes.class)))}
+                    content = {@Content(mediaType = "application/json",schema = @Schema(implementation = TempListRes.class))}
             ),
             @ApiResponse(
                     responseCode = "400", description = "임시 저장 게시글 목록 조회 실패",
@@ -240,6 +240,17 @@ public interface PostApi {
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 
+    @Operation(summary = "게시글 수정 API", description = "해당 아이디의 게시글을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "게시글 수정 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CreatePostRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "게시글 수정 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @PatchMapping("/edits/{postId}")
     ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
