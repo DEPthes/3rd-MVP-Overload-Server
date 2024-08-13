@@ -357,38 +357,53 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<CreatePostRes> modifyPost(Long memberId, Long postId, CreatePostReq createPostReq) {
-        validateTagName(createPostReq.getTagNameList());
+        if(createPostReq != null) {
+            validateTagName(createPostReq.getTagNameList());
 
-        Post post = postRepository.findByIdAndStage(postId, Stage.PUBLISHED);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+            Post post = postRepository.findByIdAndStage(postId, Stage.PUBLISHED);
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
-        if(post == null) {
-            throw new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId);
-        }
-        if(!post.getMember().equals(member)) {
-            throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
-        }
+            if (post == null) {
+                throw new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId);
+            }
+            if (!post.getMember().equals(member)) {
+                throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
+            }
 
-        String content = createPostReq.getContent();
-        String previewContent = MarkdownUtil.extractPreviewContent(content);
-        String previewImage = MarkdownUtil.extractPreviewImage(content);
+            String title = post.getTitle();
+            String content = post.getContent();
+            String previewContent = post.getPreviewContent();
+            String previewImage = post.getPreviewImage();
 
-        post.updatePost(createPostReq.getTitle(), content, previewContent, previewImage, Stage.PUBLISHED);
+            if(createPostReq.getTitle() != null) {
+                title = createPostReq.getTitle();
+            }
+            if(createPostReq.getContent() != null) {
+                content = createPostReq.getContent();
+                previewContent = MarkdownUtil.extractPreviewContent(content);
+                previewImage = MarkdownUtil.extractPreviewImage(content);
+            }
 
-        taggingRepository.deleteByPost(post);
+            post.updatePost(title, content, previewContent, previewImage, Stage.PUBLISHED);
 
-        // 태그 저장 & Tagging 엔티티 연결
-        for(String tagName : createPostReq.getTagNameList()) {
-            Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+            if(createPostReq.getTagNameList() != null && !createPostReq.getTagNameList().isEmpty()) {
+                taggingRepository.deleteByPost(post);
 
-            Tagging tagging = Tagging.builder()
-                    .post(post)
-                    .tag(tag)
-                    .build();
+                for (String tagName : createPostReq.getTagNameList()) {
+                    if(tagName != null) {
+                        Tag tag = tagRepository.findByName(tagName)
+                                .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
 
-            taggingRepository.save(tagging);
+                        Tagging tagging = Tagging.builder()
+                                .post(post)
+                                .tag(tag)
+                                .build();
+
+                        taggingRepository.save(tagging);
+                    }
+                }
+            }
         }
 
         CreatePostRes createPostRes = CreatePostRes.builder()
