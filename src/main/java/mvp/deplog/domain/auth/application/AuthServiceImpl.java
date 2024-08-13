@@ -1,8 +1,6 @@
 package mvp.deplog.domain.auth.application;
 
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.auth.domain.RefreshToken;
-import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.auth.dto.mapper.MemberAuthMapper;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
@@ -15,6 +13,7 @@ import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import mvp.deplog.infrastructure.redis.RedisUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,12 +28,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthServiceImpl implements AuthService{
 
+    @Value("${jwt.refresh.expiration}")
+    private long refreshTokenValidityInSeconds;
+
+    private static String RT_PREFIX = "RT_";
+
     private final RedisUtil redisUtil;
     private final AuthenticationManager authenticationManager;
     private final MemberAuthMapper memberAuthMapper;
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -75,22 +78,8 @@ public class AuthServiceImpl implements AuthService{
         memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
-        refreshTokenRepository.findByMemberEmail(email)
-                .ifPresentOrElse(
-                        findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
-                        () -> refreshTokenRepository.save(
-                                RefreshToken.builder()
-                                        .memberEmail(loginReq.getEmail())
-                                        .refreshToken(refreshToken)
-                                        .build()
-                        )
-                );
-
-        refreshTokenRepository.save(RefreshToken.builder()
-                .memberEmail(loginReq.getEmail())
-                .refreshToken(refreshToken)
-                .build()
-        );
+        String findRefreshToken = redisUtil.getData(RT_PREFIX + email);
+        redisUtil.setDataExpire(RT_PREFIX + email, refreshToken, refreshTokenValidityInSeconds);
 
         LoginRes loginRes = LoginRes.builder()
                 .accessToken(accessToken)
