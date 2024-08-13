@@ -1,12 +1,12 @@
 package mvp.deplog.global.config;
 
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.AuthenticationEntryPointImpl;
 import mvp.deplog.global.security.UserDetailsServiceImpl;
 import mvp.deplog.global.security.filter.JwtAuthenticationProcessingFilter;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
+import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +32,7 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisUtil redisUtil;
 
     private static final String[] WHITE_LIST = {
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
@@ -83,6 +83,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
-        return new JwtAuthenticationProcessingFilter(jwtTokenProvider, memberRepository, refreshTokenRepository);
+        return new JwtAuthenticationProcessingFilter(jwtTokenProvider, memberRepository, redisUtil);
     }
 }

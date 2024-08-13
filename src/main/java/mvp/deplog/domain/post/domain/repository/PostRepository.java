@@ -1,5 +1,6 @@
 package mvp.deplog.domain.post.domain.repository;
 
+import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
@@ -23,4 +24,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByTitleContainingOrContentContaining(@Param("titleSearchWord") String titleSearchWord,
                                                         @Param("contentSearchWord") String contentSearchWord,
                                                         Pageable pageable);
+
+    List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
 }
+
+
