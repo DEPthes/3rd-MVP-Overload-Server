@@ -22,4 +22,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
 
     Post findByIdAndStage(Long id, Stage stage);
+
+    Long countByContentContaining(String imageUrl);
 }

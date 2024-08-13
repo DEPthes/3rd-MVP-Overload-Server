@@ -370,6 +370,9 @@ public class PostService {
             throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
         }
 
+        // 수정 전 게시글 내 이미지 url 추출
+        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
+
         String title = post.getTitle();
         String content = post.getContent();
         String previewContent = post.getPreviewContent();
@@ -385,6 +388,20 @@ public class PostService {
         }
 
         post.updatePost(title, content, previewContent, previewImage, Stage.PUBLISHED);
+
+        // 수정 후 게시글 내 이미지 url 추출
+        List<String> newImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
+
+        // 기존 이미지 url이 수정된 게시글에 있는지 확인
+        for(String oldImageUrl : oldImageUrls) {
+            if(!newImageUrls.contains(oldImageUrl)) {
+                // 기존 이미지 url이 다른 게시글에도 사용되는 지 확인
+                long referenceCount = postRepository.countByContentContaining(oldImageUrl);
+                if(referenceCount == 0) {   // 참조하는 게시글이 없다면 S3에서 제거
+                    fileService.deleteFile(oldImageUrl, DIRNAME);
+                }
+            }
+        }
 
         if(createPostReq.getTagNameList() != null && !createPostReq.getTagNameList().isEmpty()) {
             taggingRepository.deleteByPost(post);
