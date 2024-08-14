@@ -2,6 +2,7 @@ package mvp.deplog.global.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,11 +10,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
-import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +52,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     private static final String BEARER = "Bearer ";
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
 
     //== 메서드 ==//
@@ -81,33 +78,35 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
                 .sign(Algorithm.HMAC512(secret));
     }
 
-    @Override
-    public void updateRefreshToken(String email, String refreshToken) {
-        memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
+    // refresh token 갱신 : login 시 - 미사용
+//    @Override
+//    public void updateRefreshToken(String email, String refreshToken) {
+//        memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
+//
+//        refreshTokenRepository.findByRefreshToken(refreshToken)
+//                .ifPresentOrElse(
+//                        findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
+//                        () -> {
+//                            throw new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken);
+//                        }
+//                );
+//    }
 
-        refreshTokenRepository.findByRefreshToken(refreshToken)
-                .ifPresentOrElse(
-                        findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
-                        () -> {
-                            throw new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken);
-                        }
-                );
-    }
-
-    @Override
-    public void destroyRefreshToken(String email) {
-        memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
-
-        refreshTokenRepository.findByMemberEmail(email)
-                .ifPresentOrElse(
-                        refreshTokenRepository::delete,
-                        () -> {
-                            throw new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email);
-                        }
-                );
-    }
+    // refresh token 삭제 : logout 시 - 미사용
+//    @Override
+//    public void destroyRefreshToken(String email) {
+//        memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
+//
+//        refreshTokenRepository.findByMemberEmail(email)
+//                .ifPresentOrElse(
+//                        refreshTokenRepository::delete,
+//                        () -> {
+//                            throw new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email);
+//                        }
+//                );
+//    }
 
     @Override
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
@@ -175,8 +174,11 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         try {
             JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
             return true;
+        }  catch (TokenExpiredException ex) {
+            log.error("만료된 JWT 토큰입니다.");
+            return false;
         } catch (Exception e) {
-            log.error("유효하지 않은 Token입니다", e.getMessage());
+            log.error("유효하지 않은 토큰입니다", e.getMessage());
             return false;
         }
     }

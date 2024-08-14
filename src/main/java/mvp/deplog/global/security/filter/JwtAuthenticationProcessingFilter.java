@@ -5,11 +5,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.auth.domain.respository.RefreshTokenRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.security.UserDetailsImpl;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
+import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -26,7 +26,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisUtil redisUtil;
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
@@ -42,7 +42,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .orElse(null); //2
 
         if(refreshToken != null){
-            checkRefreshTokenAndReIssueAccessToken(response, refreshToken); //3
+//            checkRefreshTokenAndReIssueAccessToken(response, refreshToken); //3
+            System.out.println("check refresh token and reissue access token 별도 구현 ");
             return;
         }
         checkAccessTokenAndAuthentication(request, response, filterChain);//4
@@ -68,10 +69,15 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         SecurityContextHolder.setContext(context);
     }
 
-    private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-        refreshTokenRepository.findByRefreshToken(refreshToken)
-                        .ifPresent(findRefreshToken ->
-                                jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getMemberEmail()))
-                        );
-    }
+    // reissue 별도 구현
+//    private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
+//        String data = redisUtil.getData(refreshToken);
+//        if (data != null)
+//            jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(data));
+//
+//        refreshTokenRepository.findByRefreshToken(refreshToken)
+//                        .ifPresent(findRefreshToken ->
+//                                jwtTokenProvider.sendAccessToken(response, jwtTokenProvider.createAccessToken(findRefreshToken.getMemberEmail()))
+//                        );
+//    }
 }

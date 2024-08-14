@@ -1,17 +1,17 @@
 package mvp.deplog.domain.comment.presentation;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.application.CommentService;
-import mvp.deplog.domain.comment.dto.request.CommentReq;
-import mvp.deplog.domain.comment.dto.response.CommentRes;
+import mvp.deplog.domain.comment.dto.request.CreateCommentReq;
+import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,10 +20,17 @@ public class CommentController implements CommentApi {
 
     private final CommentService commentService;
 
+    @Override
     @PostMapping
-    public ResponseEntity<SuccessResponse<Message>> createComment(@RequestBody CommentReq commentReq) {
+    public ResponseEntity<SuccessResponse<Message>> createComment(@RequestBody CreateCommentReq createCommentReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(commentService.createComment(commentReq));
+                .body(commentService.createComment(createCommentReq));
     }
+
+    @Override
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<SuccessResponse<List<CommentListRes>>> getComments(@PathVariable(value = "postId") Long postId){
+        return ResponseEntity.ok(commentService.getCommentList(postId));
+    };
 }

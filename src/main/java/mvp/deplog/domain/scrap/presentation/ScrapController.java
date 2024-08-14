@@ -1,20 +1,15 @@
 package mvp.deplog.domain.scrap.presentation;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import mvp.deplog.domain.post.domain.repository.PostRepository;
-import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.domain.scrap.application.ScrapService;
 import mvp.deplog.global.common.Message;
+import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,11 +19,26 @@ public class ScrapController implements ScrapApi {
     private final ScrapService scrapService;
 
     @Override
-    @PostMapping("/{post_id}")
+    @PostMapping("/{postId}")
     public ResponseEntity<SuccessResponse<Message>> scrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                              @PathVariable(value = "post_id") Long postId){
+                                                              @PathVariable(value = "postId") Long postId){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(scrapService.scrapPost(userDetails.getMember().getId(), postId));
+    }
+
+    @Override
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<SuccessResponse<Message>> deleteScrapPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                    @PathVariable(value = "postId") Long postId){
+        return ResponseEntity.ok(scrapService.deleteScrapPost(userDetails.getMember().getId(), postId));
+    }
+
+    @Override
+    @GetMapping
+    public ResponseEntity<SuccessResponse<PageResponse>> getScrapPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                       @RequestParam(defaultValue = "1") Integer page,
+                                                                       @RequestParam(defaultValue = "5") Integer size) {
+        return ResponseEntity.ok(scrapService.getScrapPosts(userDetails.getMember().getId(), page-1, size));
     }
 }

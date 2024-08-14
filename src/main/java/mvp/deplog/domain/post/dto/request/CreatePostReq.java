@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PostReq {
+public class CreatePostReq {
 
     @Schema(type = "String", example = "게시글 제목", description= "게시글 제목입니다.")
     private String title;

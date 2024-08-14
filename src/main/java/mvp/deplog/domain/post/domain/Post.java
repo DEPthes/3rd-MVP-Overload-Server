@@ -64,9 +64,37 @@ public class Post extends BaseEntity {
         this.stage = stage;
     }
 
+    // 게시글 수정
+    public void updatePost(String title, String content, String previewContent, String previewImage, Stage stage) {
+        this.title = title;
+        this.content = content;
+        this.previewContent = previewContent;
+        this.previewImage = previewImage;
+        this.stage = stage;
+    }
 
     // 스크랩 수 증가
     public void incrementScrapCount() {
         this.scrapCount++;
+    }
+    // 스크랩 수 감소
+    public void decrementScrapCount() {
+        if(this.scrapCount > 0){
+            this.scrapCount--;
+        }
+    }
+    // 좋아요 수 증가
+    public void incrementLikesCount() {
+        this.likeCount++;
+    }
+    // 좋아요 수 감소
+    public void decrementLikesCount() {
+        if(this.likeCount > 0){
+            this.likeCount--;
+        }
+    }
+    // 조회수 증가
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 }
