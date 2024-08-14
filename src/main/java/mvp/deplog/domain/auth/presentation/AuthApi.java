@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
+import mvp.deplog.domain.auth.dto.request.LogoutReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
@@ -17,7 +18,9 @@ import mvp.deplog.domain.auth.dto.response.ReissueRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
+import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth API", description = "인증 관련 API입니다.")
@@ -36,7 +39,7 @@ public interface AuthApi {
     })
     @PostMapping(value = "/join")
     ResponseEntity<SuccessResponse<Message>> join(
-            @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody JoinReq joinReq
+            @Parameter(description = "Schemas의 JoinReq를 참고해주세요.", required = true) @Valid @RequestBody JoinReq joinReq
     );
 
     @Operation(summary = "로그인 API", description = "로그인을 진행합니다.")
@@ -52,7 +55,24 @@ public interface AuthApi {
     })
     @PostMapping(value = "/login")
     ResponseEntity<SuccessResponse<LoginRes>> login(
-            @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody LoginReq loginReq
+            @Parameter(description = "Schemas의 LoginReq를 참고해주세요.", required = true) @Valid @RequestBody LoginReq loginReq
+    );
+
+    @Operation(summary = "로그아웃 API", description = "로그아웃을 진행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "로그아웃 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "로그아웃 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @DeleteMapping(value = "/logout")
+    ResponseEntity<SuccessResponse<Message>> logout(
+            @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "Schemas의 LogoutReq를 참고해주세요.", required = true) @RequestBody LogoutReq logoutReq
     );
 
     @Operation(summary = "토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰 재발급을 진행합니다.")
