@@ -107,7 +107,7 @@ public class PostService {
 
     public SuccessResponse<PageResponse> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findAllByStage(Stage.PUBLISHED, pageable);
 
         Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
                 .id(post.getId())
