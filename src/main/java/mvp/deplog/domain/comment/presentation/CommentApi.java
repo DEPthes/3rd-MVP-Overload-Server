@@ -24,14 +24,14 @@ import java.util.List;
 @Tag(name = "Comment API", description = "댓글 관련 API입니다.")
 public interface CommentApi {
 
-    @Operation(summary = "댓글 작성 API", description = "댓글 작성을 진행합니다.")
+    @Operation(summary = "댓글/대댓글 작성 API", description = "댓글/대댓글 작성을 진행합니다.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "201", description = "댓글 작성 성공",
+                    responseCode = "201", description = "댓글/대댓글 작성 성공",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
             ),
             @ApiResponse(
-                    responseCode = "400", description = "댓글 작성 실패",
+                    responseCode = "400", description = "댓글/대댓글 작성 실패",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })

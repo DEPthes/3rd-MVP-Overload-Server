@@ -13,11 +13,9 @@ public class PostDetailServiceFactory {
     private final List<PostDetailService<?>> postDetailServiceList;
 
     public PostDetailService<?> find(final UserDetailsImpl userDetails) {
-        System.out.println(userDetails);
         return postDetailServiceList.stream()
                 .filter(v -> v.supports(userDetails))
                 .findFirst()
                 .orElseThrow();
     }
-
 }
