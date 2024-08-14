@@ -354,4 +354,71 @@ public class PostService {
 
         return SuccessResponse.of(TempListRes);
     }
+
+    @Transactional
+    public SuccessResponse<CreatePostRes> modifyPost(Long memberId, Long postId, CreatePostReq createPostReq) {
+        validateTagName(createPostReq.getTagNameList());
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        if (!post.getMember().equals(member)) {
+            throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
+        }
+
+        String title = post.getTitle();
+        String content = post.getContent();
+        String previewContent = post.getPreviewContent();
+        String previewImage = post.getPreviewImage();
+
+        // 수정 전 게시글 내 이미지 url 추출
+        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(content);
+
+        if(createPostReq.getTitle() != null) {
+            title = createPostReq.getTitle();
+        }
+        if(createPostReq.getContent() != null) {
+            content = createPostReq.getContent();
+            previewContent = MarkdownUtil.extractPreviewContent(content);
+            previewImage = MarkdownUtil.extractPreviewImage(content);
+        }
+
+        post.updatePost(title, content, previewContent, previewImage, post.getStage());
+
+        // 수정 후 게시글 내 이미지 url 추출
+        List<String> newImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
+
+        // 기존 이미지 url이 수정된 게시글에 있는지 확인
+        for(String oldImageUrl : oldImageUrls) {
+            if(!newImageUrls.contains(oldImageUrl)) {
+                fileService.deleteFile(oldImageUrl, DIRNAME);
+            }
+        }
+
+        if(createPostReq.getTagNameList() != null && !createPostReq.getTagNameList().isEmpty()) {
+            taggingRepository.deleteByPost(post);
+
+            for (String tagName : createPostReq.getTagNameList()) {
+                if(tagName != null) {
+                    Tag tag = tagRepository.findByName(tagName)
+                            .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+
+                    Tagging tagging = Tagging.builder()
+                            .post(post)
+                            .tag(tag)
+                            .build();
+
+                    taggingRepository.save(tagging);
+                }
+            }
+        }
+
+        CreatePostRes createPostRes = CreatePostRes.builder()
+                .postId(postId)
+                .build();
+
+        return SuccessResponse.of(createPostRes);
+    }
 }

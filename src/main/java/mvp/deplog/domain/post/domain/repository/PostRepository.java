@@ -11,8 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
+
+    Optional<Post> findById(Long id);
 
     @Query("SELECT p FROM Post p WHERE p.member.part IN :parts")
     Page<Post> findByMemberPart(@Param("parts") List<Part> partGroup, Pageable pageable);
