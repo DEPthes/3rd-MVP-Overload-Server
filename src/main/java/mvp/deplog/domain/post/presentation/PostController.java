@@ -99,9 +99,9 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @PutMapping("/publishing")
+    @PutMapping("/publishing/{postId}")
     public ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                           @RequestParam(value = "postId") Long postId,
+                                                                           @PathVariable(value = "postId") Long postId,
                                                                            @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.publishTempPost(userDetails.getMember().getId(), postId, createPostReq));
     }
@@ -110,5 +110,13 @@ public class PostController implements PostApi {
     @GetMapping("/temps")
     public ResponseEntity<SuccessResponse<List<TempListRes>>> getAllTempPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok(postService.getAllTempPosts(userDetails.getMember().getId()));
+    }
+
+    @Override
+    @PutMapping("/edits/{postId}")
+    public ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                      @PathVariable(value = "postId") Long postId,
+                                                                      @RequestBody CreatePostReq createPostReq) {
+        return ResponseEntity.ok(postService.modifyPost(userDetails.getMember().getId(), postId, createPostReq));
     }
 }

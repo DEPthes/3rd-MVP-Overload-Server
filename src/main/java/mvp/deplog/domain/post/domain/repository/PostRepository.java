@@ -11,9 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    Optional<Post> findById(Long id);
+
+    @Query("SELECT p FROM Post p WHERE p.member.part IN :parts")
     Page<Post> findAllByStage(Stage stage, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.member.part IN :parts AND p.stage = 'PUBLISHED'")
@@ -27,5 +31,3 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
 }
-
-
