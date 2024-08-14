@@ -359,24 +359,22 @@ public class PostService {
     public SuccessResponse<CreatePostRes> modifyPost(Long memberId, Long postId, CreatePostReq createPostReq) {
         validateTagName(createPostReq.getTagNameList());
 
-        Post post = postRepository.findByIdAndStage(postId, Stage.PUBLISHED);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
-        if (post == null) {
-            throw new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId);
-        }
         if (!post.getMember().equals(member)) {
             throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
         }
-
-        // 수정 전 게시글 내 이미지 url 추출
-        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
 
         String title = post.getTitle();
         String content = post.getContent();
         String previewContent = post.getPreviewContent();
         String previewImage = post.getPreviewImage();
+
+        // 수정 전 게시글 내 이미지 url 추출
+        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(content);
 
         if(createPostReq.getTitle() != null) {
             title = createPostReq.getTitle();
@@ -387,7 +385,7 @@ public class PostService {
             previewImage = MarkdownUtil.extractPreviewImage(content);
         }
 
-        post.updatePost(title, content, previewContent, previewImage, Stage.PUBLISHED);
+        post.updatePost(title, content, previewContent, previewImage, post.getStage());
 
         // 수정 후 게시글 내 이미지 url 추출
         List<String> newImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
@@ -395,11 +393,7 @@ public class PostService {
         // 기존 이미지 url이 수정된 게시글에 있는지 확인
         for(String oldImageUrl : oldImageUrls) {
             if(!newImageUrls.contains(oldImageUrl)) {
-                // 기존 이미지 url이 다른 게시글에도 사용되는 지 확인
-                long referenceCount = postRepository.countByContentContaining(oldImageUrl);
-                if(referenceCount == 0) {   // 참조하는 게시글이 없다면 S3에서 제거
-                    fileService.deleteFile(oldImageUrl, DIRNAME);
-                }
+                fileService.deleteFile(oldImageUrl, DIRNAME);
             }
         }
 

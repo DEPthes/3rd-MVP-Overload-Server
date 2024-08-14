@@ -217,10 +217,10 @@ public interface PostApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @PutMapping("/publishing")
+    @PutMapping("/publishing/{postId}")
     ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @RequestParam(value = "postId") Long postId,
+            @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId,
             @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
     );
 
@@ -251,7 +251,7 @@ public interface PostApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
-    @PatchMapping("/edits/{postId}")
+    @PutMapping("/edits/{postId}")
     ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "수정할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId,
