@@ -12,7 +12,7 @@ import mvp.deplog.domain.post.domain.Post;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@Table(name = "Comment")
+@Table(name = "comment")
 public class Comment extends BaseEntity {
 
     @Id
@@ -33,25 +33,30 @@ public class Comment extends BaseEntity {
     @Column(name = "nickname")
     private String nickname;
 
+    @Column(name = "avatar_image", columnDefinition = "TEXT")
+    private String avatarImage;
+
     @Column(name = "depth", columnDefinition = "INT", nullable = false)
     @Min(value = 1)
     private int depth;
 
-    @Builder(builderMethodName = "commentBuilder", builderClassName = "commentBuilder")
-    public Comment(Post post, String content, String nickname) {
+    @Builder(builderMethodName = "commentBuilder", builderClassName = "CommentBuilder")
+    public Comment(Post post, String content, String nickname, String avatarImage) {
         this.parentComment = null;
         this.post = post;
         this.content = content;
         this.nickname = nickname;
+        this.avatarImage = avatarImage;
         this.depth = 1;
     }
 
-    @Builder(builderMethodName = "replyBuilder", builderClassName = "replyBuilder")
-    public Comment(Comment parentComment, Post post, String content, String nickname) {
+    @Builder(builderMethodName = "replyBuilder", builderClassName = "ReplyBuilder")
+    public Comment(Comment parentComment, Post post, String content, String nickname, String avatarImage) {
         this.parentComment = parentComment;
         this.post = post;
         this.content = content;
         this.nickname = nickname;
+        this.avatarImage = avatarImage;
         this.depth = parentComment.getDepth() + 1;
     }
 }
