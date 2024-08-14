@@ -1,19 +1,22 @@
 package mvp.deplog.domain.auth.application;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.dto.mapper.MemberAuthMapper;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
+import mvp.deplog.domain.auth.dto.request.LogoutReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.domain.auth.dto.response.ReissueRes;
-import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.global.security.UserDetailsImpl;
 import mvp.deplog.global.security.jwt.JwtTokenProvider;
 import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +29,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -35,6 +43,7 @@ public class AuthServiceImpl implements AuthService{
     private long refreshTokenValidityInSeconds;
 
     private static String RT_PREFIX = "RT_";
+    private static String BL_AT_PREFIX = "BL_AT_";
 
     private final RedisUtil redisUtil;
     private final AuthenticationManager authenticationManager;
@@ -64,7 +73,6 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    @Transactional
     public SuccessResponse<LoginRes> login(LoginReq loginReq) {
         String email = loginReq.getEmail();
         String password = loginReq.getPassword();
@@ -92,9 +100,34 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
+    public SuccessResponse<Message> logout(UserDetailsImpl userDetails, LogoutReq logoutReq) {
+        String email = userDetails.getMember().getEmail();
+        String findEmail = redisUtil.getData(RT_PREFIX + logoutReq.getRefreshToken());
+        if (!email.equals(findEmail))
+            throw new IllegalArgumentException("본인의 리프레시 토큰만 삭제할 수 있습니다.");
+        redisUtil.deleteData(RT_PREFIX + logoutReq.getRefreshToken());
+
+        // 남은 시간을 초 단위로 계산
+        DecodedJWT decodedJWT = JWT.decode(logoutReq.getAccessToken());
+        Instant expiresAt = decodedJWT.getExpiresAt().toInstant();
+        Instant now = Instant.now();
+        long between = ChronoUnit.SECONDS.between(now, expiresAt);
+        System.out.println("남은 시간: " + between);
+
+        // 남은 만료시간만큼 access token blacklist
+        redisUtil.setDataExpire(BL_AT_PREFIX + logoutReq.getAccessToken(), "black list token", between);
+
+        Message message = Message.builder()
+                .message("로그아웃이 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
+
+    @Override
     public SuccessResponse<ReissueRes> reissue(String refreshToken) {
         if (!jwtTokenProvider.isTokenValid(refreshToken))
-            throw new TokenExpiredException("만료된 리프레시 토큰입니다.");
+            throw new TokenExpiredException("유효하지 않은 리프레시 토큰입니다.");
 
         String email = redisUtil.getData(RT_PREFIX + refreshToken);
         String accessToken = jwtTokenProvider.createAccessToken(email);
