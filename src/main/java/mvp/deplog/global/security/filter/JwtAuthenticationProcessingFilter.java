@@ -36,17 +36,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String refreshToken = jwtTokenProvider
-                .extractRefreshToken(request)
-                .filter(jwtTokenProvider::isTokenValid)
-                .orElse(null); //2
+//        String refreshToken = jwtTokenProvider
+//                .extractRefreshToken(request)
+//                .filter(jwtTokenProvider::isTokenValid)
+//                .orElse(null); //2
 
-        if(refreshToken != null){
+//        if(refreshToken != null){
 //            checkRefreshTokenAndReIssueAccessToken(response, refreshToken); //3
-            System.out.println("check refresh token and reissue access token 별도 구현 ");
-            return;
-        }
-        checkAccessTokenAndAuthentication(request, response, filterChain);//4
+//            System.out.println("check refresh token and reissue access token 별도 구현 ");
+//            return;
+//        }
+        checkAccessTokenAndAuthentication(request, response, filterChain);
     }
 
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
