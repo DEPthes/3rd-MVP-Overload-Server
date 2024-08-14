@@ -17,4 +17,7 @@ public class CreateCommentReq {
 
     @Schema(type = "String", example = "닉네임", description = "닉네임입니다.")
     private String nickname;
+
+    @Schema(type = "String", example = "www.avatarImage.png", description = "댓글 아바타 이미지 Url입니다. 비회원 혹은 닉네임 사용 미체크 시 null입니다.")
+    private String avatarImage;
 }

@@ -12,7 +12,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
 
         Info info = new Info()
-                .version("v1.0.0")
+                .version("v2.3.0")
                 .title("DEPlog API")
                 .description("DEPlog API 목록입니다.");
 
