@@ -1,5 +1,6 @@
 package mvp.deplog.domain.auth.application;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.auth.dto.mapper.MemberAuthMapper;
 import mvp.deplog.domain.auth.dto.request.LoginReq;
@@ -7,6 +8,8 @@ import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
+import mvp.deplog.domain.auth.dto.response.ReissueRes;
+import mvp.deplog.domain.auth.exception.RefreshTokenNotFoundException;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
@@ -78,8 +81,7 @@ public class AuthServiceImpl implements AuthService{
         memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
 
-        String findRefreshToken = redisUtil.getData(RT_PREFIX + email);
-        redisUtil.setDataExpire(RT_PREFIX + email, refreshToken, refreshTokenValidityInSeconds);
+        redisUtil.setDataExpire(RT_PREFIX + refreshToken, email, refreshTokenValidityInSeconds);
 
         LoginRes loginRes = LoginRes.builder()
                 .accessToken(accessToken)
@@ -87,6 +89,21 @@ public class AuthServiceImpl implements AuthService{
                 .build();
 
         return SuccessResponse.of(loginRes);
+    }
+
+    @Override
+    public SuccessResponse<ReissueRes> reissue(String refreshToken) {
+        if (!jwtTokenProvider.isTokenValid(refreshToken))
+            throw new TokenExpiredException("만료된 리프레시 토큰입니다.");
+
+        String email = redisUtil.getData(RT_PREFIX + refreshToken);
+        String accessToken = jwtTokenProvider.createAccessToken(email);
+
+        ReissueRes reissueRes = ReissueRes.builder()
+                .accessToken(accessToken)
+                .build();
+
+        return SuccessResponse.of(reissueRes);
     }
 
     @Override

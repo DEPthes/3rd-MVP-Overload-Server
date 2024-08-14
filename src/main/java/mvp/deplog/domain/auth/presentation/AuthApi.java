@@ -13,6 +13,7 @@ import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
+import mvp.deplog.domain.auth.dto.response.ReissueRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
@@ -52,6 +53,22 @@ public interface AuthApi {
     @PostMapping(value = "/login")
     ResponseEntity<SuccessResponse<LoginRes>> login(
             @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody LoginReq loginReq
+    );
+
+    @Operation(summary = "토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰 재발급을 진행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "토큰 재발급 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ReissueRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "토큰 재발급 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping(value = "/reissue")
+    ResponseEntity<SuccessResponse<ReissueRes>> reissue(
+            @Parameter(description = "리프레시 토큰을 입력해주세요.", required = true) @RequestParam(value = "refreshToken") String refreshToken
     );
 
     @Operation(summary = "이메일 중복 체크 API", description = "이메일 중복 여부를 체크합니다.")

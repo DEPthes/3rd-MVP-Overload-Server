@@ -9,6 +9,7 @@ import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.domain.auth.dto.request.ModifyPasswordReq;
 import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
+import mvp.deplog.domain.auth.dto.response.ReissueRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,12 @@ public class AuthController implements AuthApi {
     @PostMapping(value = "/login")
     public ResponseEntity<SuccessResponse<LoginRes>> login(@Valid @RequestBody LoginReq loginReq) {
         return ResponseEntity.ok(authService.login(loginReq));
+    }
+
+    @Override
+    @GetMapping(value = "/reissue")
+    public ResponseEntity<SuccessResponse<ReissueRes>> reissue(@RequestParam(value = "refreshToken") String refreshToken) {
+        return ResponseEntity.ok(authService.reissue(refreshToken));
     }
 
     @Override
