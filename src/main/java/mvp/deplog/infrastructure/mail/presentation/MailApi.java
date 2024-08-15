@@ -52,7 +52,7 @@ public interface MailApi {
             )
     })
     @GetMapping(value = "/verify")
-    void verify(
+    String verify(
             @Parameter(description = "메일 발송 시 응답받은 코드를 사용해주세요.", required = true) @RequestParam String code,
             HttpServletResponse response
     ) throws IOException;

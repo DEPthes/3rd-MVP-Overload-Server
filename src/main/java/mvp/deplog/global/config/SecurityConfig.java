@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/auth/**",
             "/test",
             "/mails/**", "/verification-email",
-            "/posts/details/**"
+            "/posts/details/**",
+            "/images/**",
     };
 
     @Bean

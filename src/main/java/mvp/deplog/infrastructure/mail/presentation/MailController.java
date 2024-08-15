@@ -6,18 +6,20 @@ import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.mail.dto.MailCodeRes;
 import mvp.deplog.infrastructure.mail.application.MailService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping(value = "/mails")
 public class MailController implements MailApi {
 
     private final MailService mailService;
 
     @Override
+    @ResponseBody
     @GetMapping
     public ResponseEntity<SuccessResponse<MailCodeRes>> sendMail(@RequestParam String email) throws Exception {
         return ResponseEntity.ok(mailService.sendMail(email));
@@ -25,9 +27,7 @@ public class MailController implements MailApi {
 
     @Override
     @GetMapping(value = "/verify")
-    public void verify(@RequestParam String code, HttpServletResponse response) throws IOException {
-        mailService.verifyCode(code);
-        String redirect_uri = "http://www.naver.com";
-        response.sendRedirect(redirect_uri);
+    public String verify(@RequestParam String code, HttpServletResponse response) throws IOException {
+        return mailService.verifyCode(code);
     }
 }

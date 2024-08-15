@@ -1,20 +1,38 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Email Verification</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div style="margin:100px;">-->
+<!--    <h1> 안녕하세요.</h1>-->
+<!--    <h1> DEPlog입니다.</h1>-->
+<!--    <br>-->
+<!--    <p> 인증을 완료하려면 아래 버튼을 클릭해주세요:</p>-->
+<!--    <br>-->
+<!--    <div align="center" style="border:1px solid black; font-family:verdana;">-->
+<!--        <p>인증을 완료하려면 아래 링크를 클릭해주세요:</p>-->
+<!--        <p><a th:href="@{${verificationUrl}(code=${code})}">이메일 인증하기</a></p>-->
+<!--    </div>-->
+<!--    <br/>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--                                 -->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Email Verification</title>
 </head>
-<body>
-<div style="margin:100px;">
-    <h1> 안녕하세요.</h1>
-    <h1> DEPlog입니다.</h1>
-    <br>
-    <p> 인증을 완료하려면 아래 버튼을 클릭해주세요:</p>
-    <br>
-    <div align="center" style="border:1px solid black; font-family:verdana;">
-        <p>인증을 완료하려면 아래 링크를 클릭해주세요:</p>
-        <p><a th:href="@{${verificationUrl}(code=${code})}">이메일 인증하기</a></p>
+<body style="background-color: #F3F4F6; font-family: 'Verdana', sans-serif; margin: 0; padding: 0;">
+<div style="margin: 100px auto; padding: 20px; max-width: 600px; background-color: #ADBBC8; border-radius: 10px; text-align: center; color: #FFFFFF; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <h1 style="font-size: 2.2em; margin-bottom: 20px; color: #000000;">DEPlog 인증 메일</h1>
+    <p style="font-size: 1.2em; line-height: 1.6; color: #000000;">인증을 완료하려면 아래 버튼을 클릭해주세요</p>
+    <div style="margin-top: 30px;">
+        <a href="#" th:href="@{${verificationUrl}(code=${code})}" style="background-color: #000000; color: #FFFFFF; padding: 15px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 1.2em; font-weight: bold; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease;">이메일 인증하기</a>
     </div>
-    <br/>
 </div>
 </body>
 </html>
