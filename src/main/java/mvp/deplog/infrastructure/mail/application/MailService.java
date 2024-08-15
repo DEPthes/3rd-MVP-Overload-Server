@@ -40,17 +40,14 @@ public class MailService {
         return SuccessResponse.of(mailCodeRes);
     }
 
-    public void verifyCode(String code) {
+    public String verifyCode(String code) {
         String email = redisUtil.getData(code);
-        if (email == null)
-            throw new IllegalArgumentException("유효하지 않은 코드입니다.");
+        if (email == null) {
+//            throw new IllegalArgumentException("유효하지 않은 코드입니다.");
+            return "fail";
+        }
         redisUtil.deleteData(code);
         redisUtil.setDataExpire(email + VERIFY_SUFFIX, String.valueOf(true), 60 * 60L);
-
-//        Message message = Message.builder()
-//                .message("이메일 인증이 완료되었습니다.")
-//                .build();
-//
-//        return SuccessResponse.of(message);
+        return "success";
     }
 }
