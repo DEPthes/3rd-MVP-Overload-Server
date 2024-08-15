@@ -17,10 +17,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findById(Long id);
 
-    @Query("SELECT p FROM Post p WHERE p.member.part IN :parts")
+    Page<Post> findAllByStage(Stage stage, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.member.part IN :parts AND p.stage = 'PUBLISHED'")
     Page<Post> findByMemberPart(@Param("parts") List<Part> partGroup, Pageable pageable);
 
-    Page<Post> findByTitleContainingOrContentContaining(String titleSearchWord, String contentSearchWord, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE (p.title LIKE %:titleSearchWord% OR p.content LIKE %:contentSearchWord%) " +
+            "AND p.stage = 'PUBLISHED'")
+    Page<Post> findByTitleContainingOrContentContaining(@Param("titleSearchWord") String titleSearchWord,
+                                                        @Param("contentSearchWord") String contentSearchWord,
+                                                        Pageable pageable);
 
     List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
 }

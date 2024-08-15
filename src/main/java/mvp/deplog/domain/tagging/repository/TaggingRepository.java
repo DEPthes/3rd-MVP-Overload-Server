@@ -6,6 +6,7 @@ import mvp.deplog.domain.tagging.Tagging;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public interface TaggingRepository extends JpaRepository<Tagging, Long> {
 
     List<Tagging> findByPost(Post post);
 
+    @Query("SELECT t FROM Tagging t WHERE t.tag = :tag AND t.post.stage = 'PUBLISHED'")
     Page<Tagging> findByTag(Tag tag, Pageable pageable);
 
     void deleteByPost(Post post);

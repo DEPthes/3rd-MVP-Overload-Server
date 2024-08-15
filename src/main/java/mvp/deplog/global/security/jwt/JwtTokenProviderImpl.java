@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,8 @@ import java.util.Optional;
 @Setter(value = AccessLevel.PRIVATE)
 @Slf4j
 public class JwtTokenProviderImpl implements JwtTokenProvider {
+
+    private final RedisUtil redisUtil;
 
     //== jwt.yml에 설정된 값 가져오기 ==//
     @Value("${jwt.secret}")
@@ -43,6 +46,8 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
+    private static String BL_AT_PREFIX = "BL_AT_";
+
     //== 1 ==//
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -58,9 +63,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     @Override
     public String createAccessToken(String email) {
-//        memberRepository.findByEmail(email)
-//                .ifPresent();
-
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
@@ -77,36 +79,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
                 .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenValidityInSeconds * 1000))
                 .sign(Algorithm.HMAC512(secret));
     }
-
-    // refresh token 갱신 : login 시 - 미사용
-//    @Override
-//    public void updateRefreshToken(String email, String refreshToken) {
-//        memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
-//
-//        refreshTokenRepository.findByRefreshToken(refreshToken)
-//                .ifPresentOrElse(
-//                        findRefreshToken -> findRefreshToken.updateRefreshToken(refreshToken),
-//                        () -> {
-//                            throw new RefreshTokenNotFoundException("해당 토큰을 찾을 수 없습니다: " + refreshToken);
-//                        }
-//                );
-//    }
-
-    // refresh token 삭제 : logout 시 - 미사용
-//    @Override
-//    public void destroyRefreshToken(String email) {
-//        memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다: " + email));
-//
-//        refreshTokenRepository.findByMemberEmail(email)
-//                .ifPresentOrElse(
-//                        refreshTokenRepository::delete,
-//                        () -> {
-//                            throw new RefreshTokenNotFoundException("해당 이메일로 토큰을 찾을 수 없습니다: " + email);
-//                        }
-//                );
-//    }
 
     @Override
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
@@ -181,5 +153,12 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
             log.error("유효하지 않은 토큰입니다", e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public boolean isTokenInBlacklist(String accessToken) {
+        // Redis에서 블랙리스트로 저장된 토큰이 있는지 확인
+        String blacklistedToken = redisUtil.getData(BL_AT_PREFIX + accessToken);
+        return blacklistedToken != null;
     }
 }
