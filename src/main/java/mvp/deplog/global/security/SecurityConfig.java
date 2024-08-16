@@ -45,7 +45,7 @@ public class SecurityConfig {
     };
 
     private static final String[] NEED_TOKEN = {
-            "/auth/logout", "/auth/reissue", "/auth/password",
+            "/auth/reissue", "/auth/password",
             "/likes/**",
             "/members/**",
             "/scraps/**",
@@ -63,7 +63,8 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
 
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers(NEED_TOKEN).authenticated()
+                                .requestMatchers("/auth/logout").authenticated()
+                                .requestMatchers(NEED_TOKEN).hasAnyRole("ADMIN", "MEMBER")
                                 .requestMatchers(WHITE_LIST).permitAll()
 //                                .requestMatchers("/test").hasAnyRole("ADMIN", "MEMBER")
                 .anyRequest().authenticated()
