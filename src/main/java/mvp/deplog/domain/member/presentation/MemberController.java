@@ -2,6 +2,7 @@ package mvp.deplog.domain.member.presentation;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.application.MemberService;
+import mvp.deplog.domain.member.dto.request.ModifyAvatarReq;
 import mvp.deplog.domain.member.dto.response.MyInfoRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
@@ -27,7 +28,7 @@ public class MemberController implements MemberApi {
     }
 
     @Override
-    public ResponseEntity<SuccessResponse<Message>> modifyAvatar(@AuthenticationPrincipal UserDetailsImpl userDetails, MultipartFile multipartFile) {
-        return ResponseEntity.ok(memberService.modifyAvatar(userDetails, multipartFile));
+    public ResponseEntity<SuccessResponse<Message>> modifyAvatar(UserDetailsImpl userDetails, ModifyAvatarReq modifyAvatarReq) {
+        return ResponseEntity.ok(memberService.modifyAvatar(userDetails, modifyAvatarReq));
     }
 }

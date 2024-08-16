@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.domain.member.dto.mapper.MemberMapper;
+import mvp.deplog.domain.member.dto.request.ModifyAvatarReq;
 import mvp.deplog.domain.member.dto.response.MyInfoRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
@@ -36,16 +37,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public SuccessResponse<Message> modifyAvatar(UserDetailsImpl userDetails, MultipartFile multipartFile) {
+    public SuccessResponse<Message> modifyAvatar(UserDetailsImpl userDetails, ModifyAvatarReq modifyAvatarReq) {
         Member member = memberRepository.findById(userDetails.getMember().getId())
                 .orElseThrow(() -> new BadCredentialsException("잘못된 토큰 입력입니다."));
 
-        fileService.deleteFile(member.getAvatarImage(), DIRNAME);
-        String filePath = fileService.uploadFile(multipartFile, DIRNAME);
-        member.updateAvatarImage(filePath);
+        member.updateAvatar(modifyAvatarReq);
 
         Message message = Message.builder()
-                .message("아바타 이미지 업로드가 완료되었습니다.")
+                .message("아바타 이미지 설정이 완료되었습니다.")
                 .build();
 
         return SuccessResponse.of(message);
