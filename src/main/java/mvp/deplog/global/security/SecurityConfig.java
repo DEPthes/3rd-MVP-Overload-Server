@@ -1,4 +1,4 @@
-package mvp.deplog.global.config;
+package mvp.deplog.global.security;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
@@ -37,10 +37,19 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
             "/auth/**",
-            "/test",
+            "/comments/**",
             "/mails/**", "/verification-email",
-            "/posts/details/**",
+            "/posts/**",
             "/images/**",
+            "/test",
+    };
+
+    private static final String[] NEED_TOKEN = {
+            "/auth/logout", "/auth/reissue", "/auth/password",
+            "/likes/**",
+            "/members/**",
+            "/scraps/**",
+            "/posts/{postId:[0-9]+}", "/posts/temps", "/posts", "/posts/uploadImages", "/posts/temps", "/posts/publishing/{postId:[0-9]+}", "/posts/edits/{postId:[0-9]+}"
     };
 
     @Bean
@@ -54,7 +63,8 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
 
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(WHITE_LIST).permitAll()
+                                .requestMatchers(NEED_TOKEN).authenticated()
+                                .requestMatchers(WHITE_LIST).permitAll()
 //                                .requestMatchers("/test").hasAnyRole("ADMIN", "MEMBER")
                 .anyRequest().authenticated()
                 )
