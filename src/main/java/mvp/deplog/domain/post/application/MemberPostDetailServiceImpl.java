@@ -2,11 +2,14 @@ package mvp.deplog.domain.post.application;
 
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.likes.domain.repository.LikesRepository;
+import mvp.deplog.domain.member.WriterInfo;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Role;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
@@ -71,12 +74,20 @@ public class MemberPostDetailServiceImpl implements PostDetailService<MemberPost
                 .scrapCount(post.getScrapCount())
                 .liked(liked)
                 .scraped(scraped)
-                .writerInfo(MemberPostDetailRes.WriterInfo.builder()
-//                        .avatarImage(post.getMember().getAvatarImage())
-                        .name(post.getMember().getName())
-                        .generation(post.getMember().getGeneration())
-                        .part(post.getMember().getPart())
-                        .build())
+                .writerInfo(WriterInfo.builder()
+                        .avatar(Avatar.builder()
+                                .avatarFace(writer.getAvatarFace())
+                                .avatarBody(writer.getAvatarBody())
+                                .avatarEyes(writer.getAvatarEyes())
+                                .avatarNose(writer.getAvatarNose())
+                                .avatarMouth(writer.getAvatarMouth())
+                                .build()
+                        )
+                        .name(writer.getName())
+                        .generation(writer.getGeneration())
+                        .part(writer.getPart())
+                        .build()
+                )
                 .build();
 
         return SuccessResponse.of(memberPostDetailRes);

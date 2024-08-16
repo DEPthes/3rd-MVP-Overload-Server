@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mvp.deplog.domain.common.BaseEntity;
+import mvp.deplog.domain.member.dto.request.ModifyAvatarReq;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -56,6 +57,14 @@ public class Member extends BaseEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateAvatar(ModifyAvatarReq modifyAvatarReq) {
+        this.avatarFace = modifyAvatarReq.getAvatarFace();
+        this.avatarBody = modifyAvatarReq.getAvatarBody();
+        this.avatarEyes = modifyAvatarReq.getAvatarEyes();
+        this.avatarNose = modifyAvatarReq.getAvatarNose();
+        this.avatarMouth = modifyAvatarReq.getAvatarMouth();
     }
 
     @Builder

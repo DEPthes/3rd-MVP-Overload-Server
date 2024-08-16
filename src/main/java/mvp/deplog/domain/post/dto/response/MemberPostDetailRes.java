@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import mvp.deplog.domain.member.domain.Part;
+import mvp.deplog.domain.member.WriterInfo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,22 +48,5 @@ public class MemberPostDetailRes {
     private Boolean scraped;
 
     @Schema(type = "WriterInfo", description = "게시글 작성자 처리에 필요한 정보")
-    private MemberPostDetailRes.WriterInfo writerInfo;
-
-    @Data
-    @Builder
-    public static class WriterInfo {
-
-        @Schema(type = "String", example = "123.png", description = "작성자의 아바타 이미지입니다.")
-        private String avatarImage;
-
-        @Schema(type = "String", example = "홍길동", description = "작성자의 이름입니다.")
-        private String name;
-
-        @Schema(type = "Integer", example = "3", description = "작성자의 기수입니다.")
-        private Integer generation;
-
-        @Schema(type = "Enum(Part)", example = "SERVER", description = "작성자의 파트입니다.", allowableValues = {"PLAN", "DESIGN", "ANDROID", "WEB", "SERVER"})
-        private Part part;
-    }
+    private WriterInfo writerInfo;
 }
