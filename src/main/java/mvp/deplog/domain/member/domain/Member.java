@@ -39,15 +39,23 @@ public class Member extends BaseEntity {
     @Min(value = 1)
     private int generation;
 
-    @Column(name = "avatar_image", columnDefinition = "TEXT")
-    private String avatarImage;
+    @Column(name = "avatar_face")
+    private String avatarFace;
+
+    @Column(name = "avatar_body")
+    private String avatarBody;
+
+    @Column(name = "avatar_eyes")
+    private String avatarEyes;
+
+    @Column(name = "avatar_nose")
+    private String avatarNose;
+
+    @Column(name = "avatar_mouth")
+    private String avatarMouth;
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateAvatarImage(String avatarImage) {
-        this.avatarImage = avatarImage;
     }
 
     @Builder
@@ -58,6 +66,10 @@ public class Member extends BaseEntity {
         this.role = Role.MEMBER;
         this.generation = generation;
         this.part = part;
-        this.avatarImage = null;
+        this.avatarFace = null;
+        this.avatarBody = null;
+        this.avatarEyes = null;
+        this.avatarNose = null;
+        this.avatarMouth = null;
     }
 }

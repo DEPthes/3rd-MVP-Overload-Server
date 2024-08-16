@@ -40,9 +40,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(userDetails.getMember().getId())
                 .orElseThrow(() -> new BadCredentialsException("잘못된 토큰 입력입니다."));
 
-        fileService.deleteFile(member.getAvatarImage(), DIRNAME);
+//        fileService.deleteFile(member.getAvatarImage(), DIRNAME);
         String filePath = fileService.uploadFile(multipartFile, DIRNAME);
-        member.updateAvatarImage(filePath);
+//        member.updateAvatarImage(filePath);
 
         Message message = Message.builder()
                 .message("아바타 이미지 업로드가 완료되었습니다.")

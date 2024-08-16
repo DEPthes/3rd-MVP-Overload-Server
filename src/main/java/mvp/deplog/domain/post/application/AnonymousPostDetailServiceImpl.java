@@ -51,7 +51,7 @@ public class AnonymousPostDetailServiceImpl implements PostDetailService<Anonymo
                 .likeCount(post.getLikeCount())
                 .scrapCount(post.getScrapCount())
                 .writerInfo(AnonymousPostDetailRes.WriterInfo.builder()
-                        .avatarImage(post.getMember().getAvatarImage())
+//                        .avatarImage(post.getMember().getAvatarImage())
                         .name(post.getMember().getName())
                         .generation(post.getMember().getGeneration())
                         .part(post.getMember().getPart())
