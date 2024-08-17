@@ -22,11 +22,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.member.part IN :parts AND p.stage = 'PUBLISHED'")
     Page<Post> findByMemberPart(@Param("parts") List<Part> partGroup, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE (p.title LIKE %:titleSearchWord% OR p.content LIKE %:contentSearchWord%) " +
+    @Query("SELECT p FROM Post p WHERE (p.title LIKE %:titleSearchWord% OR p.searchContent LIKE %:contentSearchWord%) " +
             "AND p.stage = 'PUBLISHED'")
-    Page<Post> findByTitleContainingOrContentContaining(@Param("titleSearchWord") String titleSearchWord,
-                                                        @Param("contentSearchWord") String contentSearchWord,
-                                                        Pageable pageable);
+    Page<Post> findByTitleContainingOrSearchContentContaining(@Param("titleSearchWord") String titleSearchWord,
+                                                              @Param("contentSearchWord") String contentSearchWord,
+                                                              Pageable pageable);
 
     List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
 }

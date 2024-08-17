@@ -176,7 +176,7 @@ public class PostService {
 
     public SuccessResponse<PageResponse> getSearchPosts(String searchWord, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Post> posts = postRepository.findByTitleContainingOrContentContaining(searchWord, searchWord, pageable);
+        Page<Post> posts = postRepository.findByTitleContainingOrSearchContentContaining(searchWord, searchWord, pageable);
 
         Page<PostListRes> searchPostList = posts.map(post -> PostListRes.builder()
                 .id(post.getId())
