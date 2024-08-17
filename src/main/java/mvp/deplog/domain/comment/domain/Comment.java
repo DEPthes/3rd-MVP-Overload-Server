@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mvp.deplog.domain.common.BaseEntity;
+import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.post.domain.Post;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +28,10 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
@@ -40,23 +45,48 @@ public class Comment extends BaseEntity {
     @Min(value = 1)
     private int depth;
 
-    @Builder(builderMethodName = "commentBuilder", builderClassName = "CommentBuilder")
-    public Comment(Post post, String content, String nickname, String avatarImage) {
+    @Builder(builderMethodName = "memberCommentBuilder", builderClassName = "MemberCommentBuilder")
+    public Comment(Post post, Member member, String content, String nickname, String avatarImage) {
         this.parentComment = null;
         this.post = post;
+        this.member = member;
         this.content = content;
         this.nickname = nickname;
         this.avatarImage = avatarImage;
         this.depth = 1;
     }
 
-    @Builder(builderMethodName = "replyBuilder", builderClassName = "ReplyBuilder")
-    public Comment(Comment parentComment, Post post, String content, String nickname, String avatarImage) {
+    @Builder(builderMethodName = "anonymousCommentBuilder", builderClassName = "AnonymousCommentBuilder")
+    public Comment(Post post, String content, String nickname) {
+        this.parentComment = null;
+        this.post = post;
+        this.member = null;
+        this.content = content;
+        this.nickname = nickname;
+        this.avatarImage = null;
+        this.depth = 1;
+    }
+
+    @Builder(builderMethodName = "memberReplyBuilder", builderClassName = "MemberReplyBuilder")
+    public Comment(Comment parentComment, Post post, Member member, String content, String nickname, String avatarImage) {
         this.parentComment = parentComment;
         this.post = post;
+        this.member = member;
         this.content = content;
         this.nickname = nickname;
         this.avatarImage = avatarImage;
         this.depth = parentComment.getDepth() + 1;
     }
+
+    @Builder(builderMethodName = "anonymousReplyBuilder", builderClassName = "AnonymousReplyBuilder")
+    public Comment(Comment parentComment, Post post, String content, String nickname) {
+        this.parentComment = parentComment;
+        this.post = post;
+        this.member = null;
+        this.content = content;
+        this.nickname = nickname;
+        this.avatarImage = null;
+        this.depth = parentComment.getDepth() + 1;
+    }
 }
+
