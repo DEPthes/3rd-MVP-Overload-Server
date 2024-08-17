@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
-            "/auth/**",
+            "/auth/**", "/auth/password",
             "/comments/**",
             "/mails/**", "/verification-email",
             "/posts/**",
@@ -45,7 +45,7 @@ public class SecurityConfig {
     };
 
     private static final String[] NEED_TOKEN = {
-            "/auth/reissue", "/auth/password",
+            "/auth/reissue",
             "/likes/**",
             "/members/**",
             "/scraps/**",
