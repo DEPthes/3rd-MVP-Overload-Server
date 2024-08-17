@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import mvp.deplog.domain.member.dto.Avatar;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,8 +17,8 @@ public class CommentListRes {
     @Schema(type = "Long", example = "1", description = "댓글 아이디를 반환합니다.")
     private Long commentId;
 
-    @Schema(type = "String", example = "avatarImage.png", description = "댓글에 등록된 아바타 이미지를 반환합니다.")
-    private String avatarImage;
+    @Schema(type = "Avatar", description = "댓글 작성자의 아바타 이미지 객체입니다.")
+    private Avatar avatar;
 
     @Schema(type = "String", example = "댓글 작성자", description = "댓글 작성자의 닉네임을 반환합니다.")
     private String nickname;

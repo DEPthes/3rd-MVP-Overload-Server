@@ -38,21 +38,21 @@ public class Comment extends BaseEntity {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "avatar_image", columnDefinition = "TEXT")
-    private String avatarImage;
-
     @Column(name = "depth", columnDefinition = "INT", nullable = false)
     @Min(value = 1)
     private int depth;
 
+    @Column(name = "use_nickname", nullable = false)
+    private boolean useNickname;
+
     @Builder(builderMethodName = "memberCommentBuilder", builderClassName = "MemberCommentBuilder")
-    public Comment(Post post, Member member, String content, String nickname, String avatarImage) {
+    public Comment(Post post, Member member, String content, String nickname, boolean useNickname) {
         this.parentComment = null;
         this.post = post;
         this.member = member;
         this.content = content;
         this.nickname = nickname;
-        this.avatarImage = avatarImage;
+        this.useNickname = useNickname;
         this.depth = 1;
     }
 
@@ -63,18 +63,18 @@ public class Comment extends BaseEntity {
         this.member = null;
         this.content = content;
         this.nickname = nickname;
-        this.avatarImage = null;
+        this.useNickname = true;
         this.depth = 1;
     }
 
     @Builder(builderMethodName = "memberReplyBuilder", builderClassName = "MemberReplyBuilder")
-    public Comment(Comment parentComment, Post post, Member member, String content, String nickname, String avatarImage) {
+    public Comment(Comment parentComment, Post post, Member member, String content, String nickname, boolean useNickname) {
         this.parentComment = parentComment;
         this.post = post;
         this.member = member;
         this.content = content;
         this.nickname = nickname;
-        this.avatarImage = avatarImage;
+        this.useNickname = useNickname;
         this.depth = parentComment.getDepth() + 1;
     }
 
@@ -85,7 +85,7 @@ public class Comment extends BaseEntity {
         this.member = null;
         this.content = content;
         this.nickname = nickname;
-        this.avatarImage = null;
+        this.useNickname = true;
         this.depth = parentComment.getDepth() + 1;
     }
 }
