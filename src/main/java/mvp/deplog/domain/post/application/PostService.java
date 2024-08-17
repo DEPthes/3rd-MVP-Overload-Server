@@ -334,7 +334,7 @@ public class PostService {
 
         List<Post> posts = postRepository.findByMemberAndStageOrderByCreatedDateDesc(member, Stage.TEMP);
 
-        List<TempListRes> TempList = posts.stream()
+        List<TempListRes> tempList = posts.stream()
                 .map(post -> TempListRes.builder()
                         .id(post.getId())
                         .title(post.getTitle())
@@ -342,7 +342,7 @@ public class PostService {
                         .build())
                 .collect(Collectors.toList());
 
-        return SuccessResponse.of(TempList);
+        return SuccessResponse.of(tempList);
     }
 
     @Transactional
