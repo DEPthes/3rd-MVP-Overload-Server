@@ -29,59 +29,65 @@ public class CommentService {
     public SuccessResponse<List<CommentListRes>> getCommentList(Long postId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 아이디의 게시글이 없습니다: " + postId));
-        List<Comment> commentList = commentRepository.findByPost(post);
+
+        List<Comment> commentList = commentRepository.findByPostAndParentCommentIsNull(post);
+        List<Comment> replyList = commentRepository.findByPostAndParentCommentIsNotNull(post);
 
         List<CommentListRes> commentDetails = new ArrayList<>();
 
         for(Comment comment : commentList) {
-            Avatar avatar;
-            if (comment.isUseNickname()) {
-                avatar = Avatar.builder()
-                        .avatarFace(null)
-                        .avatarBody(null)
-                        .avatarEyes(null)
-                        .avatarNose(null)
-                        .avatarMouth(null)
-                        .build();
-            } else {
-                Member member = comment.getMember();
-                avatar = Avatar.builder()
-                        .avatarFace(member.getAvatarFace())
-                        .avatarBody(member.getAvatarBody())
-                        .avatarEyes(member.getAvatarEyes())
-                        .avatarNose(member.getAvatarNose())
-                        .avatarMouth(member.getAvatarMouth())
-                        .build();
-            }
+            Avatar avatar = commentAvatar(comment);
 
-            if(comment.getParentComment() == null){
-                CommentListRes commentListRes = CommentListRes.builder()
-                        .commentId(comment.getId())
-                        .avatar(avatar)
-                        .nickname(comment.getNickname())
-                        .createdDate(comment.getCreatedDate().toLocalDate())
-                        .content(comment.getContent())
-                        .replyList(new ArrayList<>())   // 대댓글 리스트 초기화
-                        .build();
+            CommentListRes commentListRes = CommentListRes.builder()
+                    .commentId(comment.getId())
+                    .avatar(avatar)
+                    .nickname(comment.getNickname())
+                    .createdDate(comment.getCreatedDate().toLocalDate())
+                    .content(comment.getContent())
+                    .replyList(new ArrayList<>())   // 대댓글 리스트 초기화
+                    .build();
 
-                commentDetails.add(commentListRes);
-            } else {
-                ReplyListRes replyListRes = ReplyListRes.builder()
-                        .commentId(comment.getId())
-                        .parentCommentId(comment.getParentComment().getId())
-                        .avatar(avatar)
-                        .nickname(comment.getNickname())
-                        .createdDate(comment.getCreatedDate().toLocalDate())
-                        .content(comment.getContent())
-                        .build();
+            commentDetails.add(commentListRes);
+        }
 
-                commentDetails.stream()
-                        .filter(parentComment -> parentComment.getCommentId().equals(comment.getParentComment().getId()))
-                        .findFirst()
-                        .ifPresent(parentComment -> parentComment.getReplyList().add(replyListRes));
-            }
+        for(Comment reply : replyList) {
+            Avatar avatar = commentAvatar(reply);
+
+            ReplyListRes replyListRes = ReplyListRes.builder()
+                    .commentId(reply.getId())
+                    .parentCommentId(reply.getParentComment().getId())
+                    .avatar(avatar)
+                    .nickname(reply.getNickname())
+                    .createdDate(reply.getCreatedDate().toLocalDate())
+                    .content(reply.getContent())
+                    .build();
+
+            commentDetails.stream()
+                    .filter(parentComment -> parentComment.getCommentId().equals(reply.getParentComment().getId()))
+                    .findFirst()
+                    .ifPresent(parentComment -> parentComment.getReplyList().add(replyListRes));
         }
 
         return SuccessResponse.of(commentDetails);
+    }
+
+    private Avatar commentAvatar(Comment comment){
+        if(!comment.isUseNickname()) {
+            Member member = comment.getMember();
+            return Avatar.builder()
+                    .avatarFace(member.getAvatarFace())
+                    .avatarBody(member.getAvatarBody())
+                    .avatarEyes(member.getAvatarEyes())
+                    .avatarNose(member.getAvatarNose())
+                    .avatarMouth(member.getAvatarMouth())
+                    .build();
+        }
+        return Avatar.builder()
+                .avatarFace(null)
+                .avatarBody(null)
+                .avatarEyes(null)
+                .avatarNose(null)
+                .avatarMouth(null)
+                .build();
     }
 }

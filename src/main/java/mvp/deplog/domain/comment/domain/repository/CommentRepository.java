@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findByPost(Post post);
+    // 댓글 목록 조히
+    List<Comment> findByPostAndParentCommentIsNull(Post post);
+
+    // 대댓글 목록 조회
+    List<Comment> findByPostAndParentCommentIsNotNull(Post post);
 
     void deleteByPost(Post post);
 }

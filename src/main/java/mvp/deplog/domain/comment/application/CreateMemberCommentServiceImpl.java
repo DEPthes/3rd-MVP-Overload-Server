@@ -56,4 +56,12 @@ public class CreateMemberCommentServiceImpl implements CreateCommentService {
 
         return SuccessResponse.of(message);
     }
+
+    private String commentNickname(Comment comment){
+        if(!comment.isUseNickname()) {
+            Member member = comment.getMember();
+            return member.getName();
+        }
+        return comment.getNickname();
+    }
 }
