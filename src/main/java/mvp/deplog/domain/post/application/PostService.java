@@ -346,18 +346,18 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<CreatePostRes> modifyPost(Long memberId, Long postId, CreatePostReq createPostReq) {
-        validateTagName(createPostReq.getTagNameList());
-
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
 
-        if (!post.getMember().equals(member)) {
+        if(!post.getMember().equals(member)) {
             throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
         }
+        if(post.getStage().equals(Stage.PUBLISHED)) {
+            validateTagName(createPostReq.getTagNameList());
+        }
 
-        String title = createPostReq.getTitle();
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
@@ -366,7 +366,7 @@ public class PostService {
         // 수정 전 게시글 내 이미지 url 추출
         List<String> oldImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
 
-        post.updatePost(title, content, previewContent, searchContent, previewImage, post.getStage());
+        post.updatePost(createPostReq.getTitle(), content, previewContent, searchContent, previewImage, post.getStage());
 
         // 수정 후 게시글 내 이미지 url 추출
         List<String> newImageUrls = MarkdownUtil.extractImageLinks(content);
