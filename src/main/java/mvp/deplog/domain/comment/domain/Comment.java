@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mvp.deplog.domain.common.BaseEntity;
+import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.post.domain.Post;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +28,10 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
@@ -41,9 +46,10 @@ public class Comment extends BaseEntity {
     private int depth;
 
     @Builder(builderMethodName = "commentBuilder", builderClassName = "CommentBuilder")
-    public Comment(Post post, String content, String nickname, String avatarImage) {
+    public Comment(Post post, Member member, String content, String nickname, String avatarImage) {
         this.parentComment = null;
         this.post = post;
+        this.member = member;
         this.content = content;
         this.nickname = nickname;
         this.avatarImage = avatarImage;
@@ -51,9 +57,10 @@ public class Comment extends BaseEntity {
     }
 
     @Builder(builderMethodName = "replyBuilder", builderClassName = "ReplyBuilder")
-    public Comment(Comment parentComment, Post post, String content, String nickname, String avatarImage) {
+    public Comment(Comment parentComment, Post post, Member member, String content, String nickname, String avatarImage) {
         this.parentComment = parentComment;
         this.post = post;
+        this.member = member;
         this.content = content;
         this.nickname = nickname;
         this.avatarImage = avatarImage;
