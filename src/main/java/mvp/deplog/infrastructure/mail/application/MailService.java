@@ -6,6 +6,7 @@ import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.infrastructure.mail.dto.MailCodeRes;
 import mvp.deplog.infrastructure.mail.MailUtil;
+import mvp.deplog.infrastructure.mail.dto.MailVerifyRes;
 import mvp.deplog.infrastructure.redis.RedisUtil;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,19 @@ public class MailService {
         redisUtil.deleteData(code);
         redisUtil.setDataExpire(email + VERIFY_SUFFIX, String.valueOf(true), 60 * 60L);
         return "success";
+    }
+
+    public SuccessResponse<MailVerifyRes> checkVerify(String email) {
+        String data = redisUtil.getData(email + "_verify");
+        boolean verified = data != null;
+
+        if (verified)
+            redisUtil.deleteData(email + "_verify");
+
+        MailVerifyRes mailVerifyRes = MailVerifyRes.builder()
+                .verified(verified)
+                .build();
+
+        return SuccessResponse.of(mailVerifyRes);
     }
 }

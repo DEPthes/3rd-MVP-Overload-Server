@@ -13,6 +13,7 @@ import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.global.exception.ErrorResponse;
 import mvp.deplog.infrastructure.mail.dto.MailCodeRes;
+import mvp.deplog.infrastructure.mail.dto.MailVerifyRes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,4 +57,20 @@ public interface MailApi {
             @Parameter(description = "메일 발송 시 응답받은 코드를 사용해주세요.", required = true) @RequestParam String code,
             HttpServletResponse response
     ) throws IOException;
+
+    @Operation(summary = "메일 인증 확인 API", description = "메일 인증 여부를 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "메일 인증 여부 확인 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MailVerifyRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "메일 인증 여부 확인 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @GetMapping
+    ResponseEntity<SuccessResponse<MailVerifyRes>> checkVerify(
+            @Parameter(description = "이메일을 입력해주세요.", required = true) @RequestParam String email
+    );
 }
