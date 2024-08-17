@@ -8,8 +8,10 @@ import mvp.deplog.domain.comment.dto.request.CreateCommentReq;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
+import mvp.deplog.global.security.UserDetailsImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,11 +26,11 @@ public class CommentController implements CommentApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<SuccessResponse<Message>> createComment(@RequestBody CreateCommentReq createCommentReq) {
-        CreateCommentService createCommentService = createCommentServiceFactory.find(createCommentReq.getParentCommentId());
+    public ResponseEntity<SuccessResponse<Message>> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreateCommentReq createCommentReq) {
+        CreateCommentService createCommentService = createCommentServiceFactory.find(userDetails, createCommentReq.getParentCommentId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(createCommentService.createComment(createCommentReq));
+                .body(createCommentService.createComment(userDetails, createCommentReq));
     }
 
     @Override
