@@ -1,5 +1,6 @@
 package mvp.deplog.domain.post.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.application.PostDetailService;
@@ -31,7 +32,8 @@ public class PostController implements PostApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<SuccessResponse<CreatePostRes>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreatePostReq createPostReq) {
+    public ResponseEntity<SuccessResponse<CreatePostRes>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                     @Valid @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(postService.createPost(userDetails.getMember(), createPostReq));
@@ -61,7 +63,7 @@ public class PostController implements PostApi {
     @Override
     @GetMapping("/details/{postId}")
     public ResponseEntity<SuccessResponse<?>> getPostDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                          @PathVariable("postId") Long postId){
+                                                            @PathVariable("postId") Long postId){
         PostDetailService<?> postDetailService = postDetailServiceFactory.find(userDetails);
         return ResponseEntity.ok(postDetailService.getPostDetail(userDetails, postId));
     }
@@ -92,7 +94,7 @@ public class PostController implements PostApi {
     @Override
     @PostMapping("/temps")
     public ResponseEntity<SuccessResponse<CreatePostRes>> createTempPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                          @RequestBody CreatePostReq createPostReq) {
+                                                                         @Valid @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(postService.createTempPost(userDetails.getMember(), createPostReq));
@@ -102,7 +104,7 @@ public class PostController implements PostApi {
     @PutMapping("/publishing/{postId}")
     public ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                            @PathVariable(value = "postId") Long postId,
-                                                                           @RequestBody CreatePostReq createPostReq) {
+                                                                          @Valid @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.publishTempPost(userDetails.getMember().getId(), postId, createPostReq));
     }
 
@@ -116,7 +118,7 @@ public class PostController implements PostApi {
     @PutMapping("/edits/{postId}")
     public ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                       @PathVariable(value = "postId") Long postId,
-                                                                      @RequestBody CreatePostReq createPostReq) {
+                                                                      @Valid @RequestBody CreatePostReq createPostReq) {
         return ResponseEntity.ok(postService.modifyPost(userDetails.getMember().getId(), postId, createPostReq));
     }
 }

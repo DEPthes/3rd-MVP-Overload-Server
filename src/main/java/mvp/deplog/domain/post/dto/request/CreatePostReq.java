@@ -1,6 +1,7 @@
 package mvp.deplog.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
@@ -9,9 +10,11 @@ import java.util.List;
 public class CreatePostReq {
 
     @Schema(type = "String", example = "게시글 제목", description= "게시글 제목입니다.")
+    @NotBlank
     private String title;
 
     @Schema(type = "String", example = "**게시글 내용**", description= "게시글 내용입니다. 마크다운 형식으로 저장됩니다.")
+    @NotBlank
     private String content;
 
     @Schema(type = "List<String>", example = "[Spring, React, JS]", description= "태그 이름 리스트입니다.")

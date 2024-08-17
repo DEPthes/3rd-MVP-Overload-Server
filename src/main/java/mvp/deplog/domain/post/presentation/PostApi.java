@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
@@ -45,7 +46,7 @@ public interface PostApi {
     @PostMapping
     ResponseEntity<SuccessResponse<CreatePostRes>> createPost(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @Valid @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "게시글 전체 목록 조회 API", description = "게시글 전체 목록을 출력합니다.")
@@ -203,7 +204,7 @@ public interface PostApi {
     @PostMapping("/temps")
     ResponseEntity<SuccessResponse<CreatePostRes>> createTempPost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @Valid @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "임시 저장 게시글 발행 API", description = "해당 아이디의 임시 저장 게시글을 벌행합니다.")
@@ -221,7 +222,7 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<CreatePostRes>> publishTempPost(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "발행할 임시 저장 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId,
-            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @Valid @RequestBody CreatePostReq createPostReq
     );
 
     @Operation(summary = "임시 저장 게시글 목록 조회 API", description = "해당 아이디의 임시 저장 게시글 목록을 조회합니다.")
@@ -255,6 +256,6 @@ public interface PostApi {
     ResponseEntity<SuccessResponse<CreatePostRes>> modifyPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "수정할 게시글의 아이디를 입력하세요.", required = true) @PathVariable(value = "postId") Long postId,
-            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @RequestBody CreatePostReq createPostReq
+            @Parameter(description = "Schemas의 CreatePostReq를 참고해주세요.", required = true) @Valid @RequestBody CreatePostReq createPostReq
     );
 }
