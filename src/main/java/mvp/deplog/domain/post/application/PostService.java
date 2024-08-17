@@ -88,6 +88,7 @@ public class PostService {
                     .post(post)
                     .tag(tag)
                     .build();
+
             taggingRepository.save(tagging);
         }
 
