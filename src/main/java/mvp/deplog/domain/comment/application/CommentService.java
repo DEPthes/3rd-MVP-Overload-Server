@@ -6,6 +6,8 @@ import mvp.deplog.domain.comment.domain.repository.CommentRepository;
 import mvp.deplog.domain.comment.dto.request.CreateCommentReq;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.domain.comment.dto.response.ReplyListRes;
+import mvp.deplog.domain.member.domain.Member;
+import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.global.common.Message;
@@ -32,10 +34,30 @@ public class CommentService {
         List<CommentListRes> commentDetails = new ArrayList<>();
 
         for(Comment comment : commentList) {
+            Avatar avatar;
+            if (comment.isUseNickname()) {
+                avatar = Avatar.builder()
+                        .avatarFace(null)
+                        .avatarBody(null)
+                        .avatarEyes(null)
+                        .avatarNose(null)
+                        .avatarMouth(null)
+                        .build();
+            } else {
+                Member member = comment.getMember();
+                avatar = Avatar.builder()
+                        .avatarFace(member.getAvatarFace())
+                        .avatarBody(member.getAvatarBody())
+                        .avatarEyes(member.getAvatarEyes())
+                        .avatarNose(member.getAvatarNose())
+                        .avatarMouth(member.getAvatarMouth())
+                        .build();
+            }
+
             if(comment.getParentComment() == null){
                 CommentListRes commentListRes = CommentListRes.builder()
                         .commentId(comment.getId())
-                        .avatarImage(comment.getAvatarImage()) // 아바타 이미지 url
+                        .avatar(avatar)
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())
@@ -47,7 +69,7 @@ public class CommentService {
                 ReplyListRes replyListRes = ReplyListRes.builder()
                         .commentId(comment.getId())
                         .parentCommentId(comment.getParentComment().getId())
-                        .avatarImage(comment.getAvatarImage())     // 아바타 이미지 url
+                        .avatar(avatar)
                         .nickname(comment.getNickname())
                         .createdDate(comment.getCreatedDate().toLocalDate())
                         .content(comment.getContent())

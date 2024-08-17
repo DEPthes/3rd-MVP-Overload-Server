@@ -45,7 +45,7 @@ public class CreateMemberCommentServiceImpl implements CreateCommentService {
                 .member(member)
                 .content(createCommentReq.getContent())
                 .nickname(createCommentReq.getNickname())
-                .avatarImage(createCommentReq.getAvatarImage())
+                .useNickname(createCommentReq.isUseNicknameChecked())
                 .build();
 
         commentRepository.save(comment);
