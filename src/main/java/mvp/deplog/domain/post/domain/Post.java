@@ -69,10 +69,11 @@ public class Post extends BaseEntity {
     }
 
     // 게시글 수정
-    public void updatePost(String title, String content, String previewContent, String previewImage, Stage stage) {
+    public void updatePost(String title, String content, String previewContent, String searchContent, String previewImage, Stage stage) {
         this.title = title;
         this.content = content;
         this.previewContent = previewContent;
+        this.searchContent = searchContent;
         this.previewImage = previewImage;
         this.stage = stage;
     }

@@ -64,12 +64,14 @@ public class PostService {
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
+        String searchContent = MarkdownUtil.extractPlainText(content);
 
         Post post = Post.builder()
                 .member(member)
                 .title(createPostReq.getTitle())
                 .content(content)
                 .previewContent(previewContent)
+                .searchContent(searchContent)
                 .previewImage(previewImage)
                 .stage(Stage.PUBLISHED)
                 .build();
@@ -109,7 +111,16 @@ public class PostService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts = postRepository.findAllByStage(Stage.PUBLISHED, pageable);
 
-        Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
+        Page<PostListRes> postList = postList(posts);
+
+        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
+        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
+
+        return SuccessResponse.of(pageResponse);
+    }
+
+    private Page<PostListRes> postList(Page<Post> posts) {
+        return posts.map(post -> PostListRes.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .previewContent(post.getPreviewContent())
@@ -120,11 +131,6 @@ public class PostService {
                 .likeCount(post.getLikeCount())
                 .scrapCount(post.getScrapCount())
                 .build());
-
-        PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
-        PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
-
-        return SuccessResponse.of(pageResponse);
     }
 
     public SuccessResponse<PageResponse> getPosts(Part part, int page, int size) {
@@ -133,17 +139,7 @@ public class PostService {
 
         posts = postList(part, pageable);
 
-        Page<PostListRes> postList = posts.map(post -> PostListRes.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .previewContent(post.getPreviewContent())
-                .previewImage(post.getPreviewImage())
-                .createdDate(post.getCreatedDate().toLocalDate())
-                .name(post.getMember().getName())
-                .viewCount(post.getViewCount())
-                .likeCount(post.getLikeCount())
-                .scrapCount(post.getScrapCount())
-                .build());
+        Page<PostListRes> postList = postList(posts);
 
         PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
         PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, postList.getContent());
@@ -178,17 +174,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Post> posts = postRepository.findByTitleContainingOrSearchContentContaining(searchWord, searchWord, pageable);
 
-        Page<PostListRes> searchPostList = posts.map(post -> PostListRes.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .previewContent(post.getPreviewContent())
-                .previewImage(post.getPreviewImage())
-                .createdDate(post.getCreatedDate().toLocalDate())
-                .name(post.getMember().getName())
-                .viewCount(post.getViewCount())
-                .likeCount(post.getLikeCount())
-                .scrapCount(post.getScrapCount())
-                .build());
+        Page<PostListRes> searchPostList = postList(posts);
 
         PageInfo pageInfo = PageInfo.toPageInfo(pageable, posts);
         PageResponse pageResponse = PageResponse.toPageResponse(pageInfo, searchPostList.getContent());
@@ -262,12 +248,14 @@ public class PostService {
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
+        String searchContent = MarkdownUtil.extractPlainText(content);
 
         Post post = Post.builder()
                 .member(member)
                 .title(createPostReq.getTitle())
                 .content(content)
                 .previewContent(previewContent)
+                .searchContent(searchContent)
                 .previewImage(previewImage)
                 .stage(Stage.TEMP)
                 .build();
@@ -313,8 +301,9 @@ public class PostService {
         String content = createPostReq.getContent();
         String previewContent = MarkdownUtil.extractPreviewContent(content);
         String previewImage = MarkdownUtil.extractPreviewImage(content);
+        String searchContent = MarkdownUtil.extractPlainText(content);
 
-        post.updatePost(createPostReq.getTitle(), content, previewContent, previewImage, Stage.PUBLISHED);
+        post.updatePost(createPostReq.getTitle(), content, previewContent, searchContent, previewImage, Stage.PUBLISHED);
 
         taggingRepository.deleteByPost(post);
 
@@ -344,15 +333,15 @@ public class PostService {
 
         List<Post> posts = postRepository.findByMemberAndStageOrderByCreatedDateDesc(member, Stage.TEMP);
 
-        List<TempListRes> TempListRes = posts.stream()
-                .map(post -> mvp.deplog.domain.post.dto.response.TempListRes.builder()
+        List<TempListRes> TempList = posts.stream()
+                .map(post -> TempListRes.builder()
                         .id(post.getId())
                         .title(post.getTitle())
                         .createdDate(post.getCreatedDate().toLocalDate())
                         .build())
                 .collect(Collectors.toList());
 
-        return SuccessResponse.of(TempListRes);
+        return SuccessResponse.of(TempList);
     }
 
     @Transactional
@@ -368,27 +357,19 @@ public class PostService {
             throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 수정할 수 없습니다.");
         }
 
-        String title = post.getTitle();
-        String content = post.getContent();
-        String previewContent = post.getPreviewContent();
-        String previewImage = post.getPreviewImage();
+        String title = createPostReq.getTitle();
+        String content = createPostReq.getContent();
+        String previewContent = MarkdownUtil.extractPreviewContent(content);
+        String previewImage = MarkdownUtil.extractPreviewImage(content);
+        String searchContent = MarkdownUtil.extractPlainText(content);
 
         // 수정 전 게시글 내 이미지 url 추출
-        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(content);
+        List<String> oldImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
 
-        if(createPostReq.getTitle() != null) {
-            title = createPostReq.getTitle();
-        }
-        if(createPostReq.getContent() != null) {
-            content = createPostReq.getContent();
-            previewContent = MarkdownUtil.extractPreviewContent(content);
-            previewImage = MarkdownUtil.extractPreviewImage(content);
-        }
-
-        post.updatePost(title, content, previewContent, previewImage, post.getStage());
+        post.updatePost(title, content, previewContent, searchContent, previewImage, post.getStage());
 
         // 수정 후 게시글 내 이미지 url 추출
-        List<String> newImageUrls = MarkdownUtil.extractImageLinks(post.getContent());
+        List<String> newImageUrls = MarkdownUtil.extractImageLinks(content);
 
         // 기존 이미지 url이 수정된 게시글에 있는지 확인
         for(String oldImageUrl : oldImageUrls) {
@@ -397,22 +378,18 @@ public class PostService {
             }
         }
 
-        if(createPostReq.getTagNameList() != null && !createPostReq.getTagNameList().isEmpty()) {
-            taggingRepository.deleteByPost(post);
+        taggingRepository.deleteByPost(post);
 
-            for (String tagName : createPostReq.getTagNameList()) {
-                if(tagName != null) {
-                    Tag tag = tagRepository.findByName(tagName)
-                            .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+        for (String tagName : createPostReq.getTagNameList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
 
-                    Tagging tagging = Tagging.builder()
-                            .post(post)
-                            .tag(tag)
-                            .build();
+            Tagging tagging = Tagging.builder()
+                    .post(post)
+                    .tag(tag)
+                    .build();
 
-                    taggingRepository.save(tagging);
-                }
-            }
+            taggingRepository.save(tagging);
         }
 
         CreatePostRes createPostRes = CreatePostRes.builder()
