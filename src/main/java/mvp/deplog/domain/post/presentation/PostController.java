@@ -67,10 +67,11 @@ public class PostController implements PostApi {
     }
 
     @Override
-    @GetMapping("/searches")
-    public ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(@RequestParam("searchWord") String searchWord,
+    @GetMapping("/searches/{searchWord}")
+    public ResponseEntity<SuccessResponse<PageResponse>> getSearchPosts(@PathVariable("searchWord") String searchWord,
                                                                         @RequestParam(defaultValue = "1") Integer page,
                                                                         @RequestParam(defaultValue = "10") Integer size){
+        System.out.println("controller : " + searchWord);
         return ResponseEntity.ok(postService.getSearchPosts(searchWord, page-1, size));
     }
 

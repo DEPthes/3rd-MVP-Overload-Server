@@ -8,3 +8,10 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: false
+#
+#server:
+#  servlet:
+#    encoding:
+#      charset: UTF-8
+#      enabled: true
+#      force: true
