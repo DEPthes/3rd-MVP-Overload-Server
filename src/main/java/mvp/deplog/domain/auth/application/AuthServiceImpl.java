@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public SuccessResponse<Message> join(JoinReq joinReq) {
         String email = joinReq.getEmail();
-        checkVerify(joinReq.getEmail());
+        checkJoinVerify(joinReq.getEmail());
 
         if (memberRepository.existsByEmail(email))
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
@@ -152,7 +152,7 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public SuccessResponse<Message> modifyPassword(ModifyPasswordReq modifyPasswordReq) {
         String email = modifyPasswordReq.getEmail();
-        checkVerify(email);
+        checkPasswordEmailVerify(email);
 
         memberRepository.findByEmail(email)
                 .ifPresentOrElse(
@@ -169,10 +169,16 @@ public class AuthServiceImpl implements AuthService{
         return SuccessResponse.of(message);
     }
 
-    private void checkVerify(String email) {
+    private void checkJoinVerify(String email) {
         String data = redisUtil.getData(email + "_verify");
         if (data == null)
             throw new IllegalArgumentException("인증이 필요한 이메일입니다.");
         redisUtil.deleteData(email + "_verify");
+    }
+
+    private void checkPasswordEmailVerify(String email) {
+        String data = redisUtil.getData(email + "_verify");
+        if (data != null)
+            throw new IllegalArgumentException("인증이 필요한 이메일입니다.");
     }
 }

@@ -1,6 +1,7 @@
 package mvp.deplog.domain.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -13,11 +14,13 @@ public class CreateCommentReq {
     private Long postId;
 
     @Schema(type = "String", example = "**댓글 내용**", description = "댓글 내용입니다.")
+    @NotBlank
     private String content;
 
     @Schema(type = "String", example = "닉네임", description = "닉네임입니다.")
+    @NotBlank
     private String nickname;
 
-    @Schema(type = "String", example = "www.avatarImage.png", description = "댓글 아바타 이미지 Url입니다. 비회원 혹은 닉네임 사용 미체크 시 null입니다.")
-    private String avatarImage;
+    @Schema(type = "boolean", example = "true", description = "닉네임 사용 체크박스 체크 여부입니다. 회원이 체크 안한 경우, 비회원의 경우 모두 true입니다. 회원이 누른 경우만 false입니다.")
+    private boolean useNicknameChecked;
 }

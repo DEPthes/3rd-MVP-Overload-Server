@@ -118,6 +118,7 @@ public interface AuthApi {
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
             )
     })
+
     @PutMapping(value = "/password")
     ResponseEntity<SuccessResponse<Message>> modifyPassword (
             @Parameter(description = "비밀번호를 변경할 계정의 이메일을 입력해주세요.", required = true) @Valid @RequestBody ModifyPasswordReq modifyPasswordReq
