@@ -222,8 +222,11 @@ public class PostService {
             throw new UnauthorizedException("본인이 작성한 게시글이 아니므로 삭제할 수 없습니다.");
         }
 
+        // 게시글 내 대댓글 삭제
+        commentRepository.deleteByPostAndParentCommentIsNotNull(post);
+
         // 게시글 내 댓글 삭제
-        commentRepository.deleteByPost(post);
+        commentRepository.deleteByPostAndParentCommentIsNull(post);
 
         // 게시글 내 태그 삭제
         taggingRepository.deleteByPost(post);

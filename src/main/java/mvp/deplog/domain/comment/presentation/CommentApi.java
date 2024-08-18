@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import mvp.deplog.domain.comment.dto.request.CreateCommentReq;
 import mvp.deplog.domain.comment.dto.response.CommentListRes;
 import mvp.deplog.global.common.Message;
@@ -40,7 +41,7 @@ public interface CommentApi {
     @PostMapping
     ResponseEntity<SuccessResponse<Message>> createComment(
             @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "Schemas의 CommentReq를 참고해주세요.", required = true) @RequestBody CreateCommentReq createCommentReq
+            @Parameter(description = "Schemas의 CommentReq를 참고해주세요.", required = true) @Valid @RequestBody CreateCommentReq createCommentReq
     );
 
     @Operation(summary = "댓글 목록 조회 API", description = "해당 게시글을 댓글 목록을 조회합니다.")
