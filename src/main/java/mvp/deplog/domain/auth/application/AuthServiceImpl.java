@@ -12,6 +12,18 @@ import mvp.deplog.domain.auth.dto.response.EmailDuplicateCheckRes;
 import mvp.deplog.domain.auth.dto.response.LoginRes;
 import mvp.deplog.domain.auth.dto.request.JoinReq;
 import mvp.deplog.domain.auth.dto.response.ReissueRes;
+import mvp.deplog.domain.comment.domain.Comment;
+import mvp.deplog.domain.comment.domain.repository.CommentRepository;
+import mvp.deplog.domain.likes.domain.Likes;
+import mvp.deplog.domain.likes.domain.repository.LikesRepository;
+import mvp.deplog.domain.post.domain.Post;
+import mvp.deplog.domain.post.domain.repository.PostRepository;
+import mvp.deplog.domain.scrap.domain.Scrap;
+import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
+import mvp.deplog.domain.tag.domain.Tag;
+import mvp.deplog.domain.tag.domain.repository.TagRepository;
+import mvp.deplog.domain.tagging.Tagging;
+import mvp.deplog.domain.tagging.repository.TaggingRepository;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.SuccessResponse;
 import mvp.deplog.domain.member.domain.Member;
@@ -32,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -50,6 +63,13 @@ public class AuthServiceImpl implements AuthService{
     private final MemberAuthMapper memberAuthMapper;
 
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final LikesRepository likesRepository;
+    private final ScrapRepository scrapRepository;
+    private final TaggingRepository taggingRepository;
+    private final TagRepository tagRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -119,6 +139,76 @@ public class AuthServiceImpl implements AuthService{
 
         Message message = Message.builder()
                 .message("로그아웃이 완료되었습니다.")
+                .build();
+
+        return SuccessResponse.of(message);
+    }
+
+    @Override
+    @Transactional
+    public SuccessResponse<Message> exit(UserDetailsImpl userDetails) {
+        Member member = memberRepository.findById(userDetails.getMember().getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // method : handle likes - delete likes
+        List<Likes> likesList = likesRepository.findAllByMember(member);
+        for (Likes likes : likesList) {
+            Post post = likes.getPost();
+            if(post.getMember().equals(member))
+                continue;
+            post.decrementLikesCount();
+        }
+        likesRepository.deleteAll(likesList);
+
+        // method : handle scrap - delete scrap
+        List<Scrap> scrapList = scrapRepository.findAllByMember(member);
+        for (Scrap scrap : scrapList) {
+            Post post = scrap.getPost();
+            if (post.getMember().equals(member))
+                continue;
+            post.decrementScrapCount();
+        }
+        scrapRepository.deleteAll(scrapList);
+
+        // method : handle comment - delete comment
+        List<Comment> commentList = commentRepository.findByMember(member);
+        for (Comment comment : commentList) {
+            if (comment.getParentComment() == null) {
+                List<Comment> childCommentList = commentRepository.findByParentComment(comment);
+                commentRepository.deleteAll(childCommentList);
+            }
+        }
+        commentRepository.deleteAll(commentList);
+
+        // method : handle tag - control tag && delete post
+        List<Post> postList = postRepository.findByMember(member);
+        for (Post post : postList) {
+            List<Tagging> taggingList = taggingRepository.findByPost(post);
+            for (Tagging tagging : taggingList) {
+                Tag tag = tagging.getTag();
+                Long taggingCount = taggingRepository.countByTag(tag);
+                taggingRepository.delete(tagging);
+                if(taggingCount == 1)
+                    tagRepository.delete(tag);
+            }
+
+            List<Comment> postCommentList = commentRepository.findByPost(post);
+            for (Comment comment : postCommentList) {
+                if (comment.getParentComment() == null) {
+                    List<Comment> childCommentList = commentRepository.findByParentComment(comment);
+                    commentRepository.deleteAll(childCommentList);
+                }
+            }
+            commentRepository.deleteAll(postCommentList);
+        }
+
+        postRepository.deleteAll(postList);
+
+        // delete member
+        memberRepository.delete(member);
+
+        Message message = Message.builder()
+                .message("회원 탈퇴가 완료되었습니다.")
                 .build();
 
         return SuccessResponse.of(message);

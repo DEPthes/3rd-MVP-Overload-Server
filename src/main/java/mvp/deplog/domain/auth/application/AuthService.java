@@ -19,6 +19,8 @@ public interface AuthService {
 
     SuccessResponse<Message> logout(UserDetailsImpl userDetails, LogoutReq logoutReq);
 
+    SuccessResponse<Message> exit(UserDetailsImpl userDetails);
+
     SuccessResponse<ReissueRes> reissue(String refreshToken);
 
     SuccessResponse<EmailDuplicateCheckRes> checkEmailDuplicate(String email);

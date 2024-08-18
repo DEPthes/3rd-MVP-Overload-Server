@@ -1,5 +1,6 @@
 package mvp.deplog.domain.comment.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.comment.application.CommentService;
 import mvp.deplog.domain.comment.application.CreateCommentService;
@@ -26,7 +27,8 @@ public class CommentController implements CommentApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<SuccessResponse<Message>> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreateCommentReq createCommentReq) {
+    public ResponseEntity<SuccessResponse<Message>> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                  @Valid @RequestBody CreateCommentReq createCommentReq) {
         CreateCommentService createCommentService = createCommentServiceFactory.find(userDetails, createCommentReq.getParentCommentId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)

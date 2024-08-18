@@ -18,4 +18,8 @@ public interface TaggingRepository extends JpaRepository<Tagging, Long> {
     Page<Tagging> findByTag(Tag tag, Pageable pageable);
 
     void deleteByPost(Post post);
+
+    List<Tagging> findAllByTag(Tag tag);
+
+    Long countByTag(Tag tag);
 }
