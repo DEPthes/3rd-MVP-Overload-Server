@@ -35,7 +35,7 @@ public class MemberPostDetailServiceImpl implements PostDetailService<MemberPost
 
     @Override
     public boolean supports(UserDetailsImpl userDetails) {
-        return userDetails.getMember().getRole().equals(Role.MEMBER) || userDetails.getMember().getRole().equals(Role.ADMIN);
+        return userDetails != null && (userDetails.getMember().getRole().equals(Role.MEMBER) || userDetails.getMember().getRole().equals(Role.ADMIN));
     }
 
     @Override

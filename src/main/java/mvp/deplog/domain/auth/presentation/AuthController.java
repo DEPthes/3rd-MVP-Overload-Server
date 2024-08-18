@@ -51,6 +51,12 @@ public class AuthController implements AuthApi {
     }
 
     @Override
+    @DeleteMapping(value = "/exit")
+    public ResponseEntity<SuccessResponse<Message>> exit(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(authService.exit(userDetails));
+    }
+
+    @Override
     @GetMapping(value = "/reissue")
     public ResponseEntity<SuccessResponse<ReissueRes>> reissue(@RequestParam(value = "refreshToken") String refreshToken) {
         return ResponseEntity.ok(authService.reissue(refreshToken));

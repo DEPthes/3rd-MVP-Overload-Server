@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
@@ -16,6 +17,8 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     Optional<Scrap> findByMemberAndPost(Member member, Post post);
 
     Page<Scrap> findByMember(Member member, Pageable pageable);
+
+    List<Scrap> findAllByMember(Member member);
 
     void deleteByPost(Post post);
 }
