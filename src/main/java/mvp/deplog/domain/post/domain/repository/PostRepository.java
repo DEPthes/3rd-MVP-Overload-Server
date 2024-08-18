@@ -29,4 +29,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                                                               Pageable pageable);
 
     List<Post> findByMemberAndStageOrderByCreatedDateDesc(Member member, Stage stage);
+
+    List<Post> findByMember(Member member);
 }

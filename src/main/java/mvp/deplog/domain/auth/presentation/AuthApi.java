@@ -75,6 +75,22 @@ public interface AuthApi {
             @Parameter(description = "Schemas의 LogoutReq를 참고해주세요.", required = true) @RequestBody LogoutReq logoutReq
     );
 
+    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴를 진행합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "회원 탈퇴 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "회원 탈퇴 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
+    @DeleteMapping(value = "/exit")
+    ResponseEntity<SuccessResponse<Message>> exit(
+            @Parameter(description = "Access Token을 입력해주세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
+
     @Operation(summary = "토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰 재발급을 진행합니다.")
     @ApiResponses(value = {
             @ApiResponse(
