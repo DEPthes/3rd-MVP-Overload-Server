@@ -237,6 +237,17 @@ public interface PostApi {
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
     );
 
+    @Operation(summary = "임시 저장 게시글 상세 조회 API", description = "해당 아이디의 임시 저장 게시글을 상세 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "임시 저장 게시글 상세 조회 성공",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TempPostDetailRes.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "임시 저장 게시글 상세 조회 실패",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}
+            )
+    })
     @GetMapping("/temps/details/{postId}")
     ResponseEntity<SuccessResponse<TempPostDetailRes>> getTempPostDetails(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
