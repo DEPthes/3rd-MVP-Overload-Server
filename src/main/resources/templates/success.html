@@ -2,10 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>이메일 인증 완료</title>
+    <title>이메일 인증 성공</title>
     <style>
         body {
-            background-color: #ADBBC8;
+            background-color: #E5E9EC;
             font-family: Arial, sans-serif;
             color: #000000;
             margin: 0;
@@ -18,23 +18,27 @@
         .container {
             text-align: center;
         }
-        .logo {
-            width: 462px;
-            height: 170px;
+        .icon {
+            width: 150px;
+            height: 150px;
             margin-bottom: 20px;
         }
-        .message {
-            font-size: 21.33px;
+        .title {
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .message {
+            font-size: 16px;
+            color: #000000;
+        }
     </style>
 </head>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <body>
 <div class="container">
-    <img src="/images/deplog-airplane.png" alt="DEP Logo" class="logo">
-    <div class="message">DEPlog 페이지로 돌아가 인증 완료 버튼을 클릭해주세요.</div>
+    <img src="/images/success_animal.png" alt="Success Icon" class="icon">
+    <div class="title">메일 인증 성공</div>
+    <div class="message">메일 인증에 성공하였습니다.<br>DEPlog 페이지로 돌아가 인증 완료 버튼을 클릭해주세요.</div>
 </div>
 </body>
 </html>
