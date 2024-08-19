@@ -6,6 +6,7 @@ import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Role;
 import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
+import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
@@ -35,7 +36,7 @@ public class AnonymousPostDetailServiceImpl implements PostDetailService<Anonymo
     @Override
     @Transactional
     public SuccessResponse<AnonymousPostDetailRes> getPostDetail(UserDetailsImpl userDetails, Long postId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByIdAndStage(postId, Stage.PUBLISHED)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
 
         // Tagging Entity에 Tag 목록 조회
