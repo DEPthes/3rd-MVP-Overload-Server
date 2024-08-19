@@ -13,6 +13,7 @@ import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.TempListRes;
 import mvp.deplog.domain.post.dto.response.PostListRes;
+import mvp.deplog.domain.post.dto.response.TempPostDetailRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.post.exception.UnauthorizedException;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
@@ -24,6 +25,7 @@ import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageInfo;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
+import mvp.deplog.global.security.UserDetailsImpl;
 import mvp.deplog.infrastructure.markdown.MarkdownUtil;
 import mvp.deplog.infrastructure.s3.application.FileService;
 import mvp.deplog.infrastructure.s3.dto.response.FileUrlRes;
@@ -346,6 +348,37 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return SuccessResponse.of(tempList);
+    }
+
+    @Transactional
+    public SuccessResponse<TempPostDetailRes> getTempPostDetails(UserDetailsImpl userDetails, Long postId) {
+        if(userDetails == null) {
+            throw new UnauthorizedException("로그인 후 이용해주세요.");
+        }
+
+        Long memberId = userDetails.getMember().getId();
+        Post post = postRepository.findByIdAndStage(postId, Stage.TEMP)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
+
+        Member writer = post.getMember();
+        if(!member.equals(writer)) {
+            throw new UnauthorizedException("본인이 작성한 임시저장 게시글만 조회할 수 있습니다.");
+        }
+
+        List<String> tagNameList = taggingRepository.findByPost(post).stream()
+                .map(tagging -> tagging.getTag().getName())
+                .collect(Collectors.toList());
+
+        TempPostDetailRes tempPostDetailRes = TempPostDetailRes.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .tagNameList(tagNameList)
+                .build();
+
+        return SuccessResponse.of(tempPostDetailRes);
     }
 
     @Transactional

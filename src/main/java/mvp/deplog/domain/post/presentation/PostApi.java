@@ -10,12 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import mvp.deplog.domain.member.domain.Part;
-import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
-import mvp.deplog.domain.post.dto.response.CreatePostRes;
+import mvp.deplog.domain.post.dto.response.*;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
-import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
-import mvp.deplog.domain.post.dto.response.TempListRes;
-import mvp.deplog.domain.post.dto.response.PostListRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -239,6 +235,12 @@ public interface PostApi {
     @GetMapping("/temps")
     ResponseEntity<SuccessResponse<List<TempListRes>>> getAllTempPosts(
             @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails
+    );
+
+    @GetMapping("/temps/details/{postId}")
+    ResponseEntity<SuccessResponse<TempPostDetailRes>> getTempPostDetails(
+            @Parameter(description = "Access Token을 입력하세요.", required = true) @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "임시 저장 게시글의 아이디를 입력하세요.", required = true) @PathVariable Long postId
     );
 
     @Operation(summary = "게시글 수정 API", description = "해당 아이디의 게시글을 수정합니다.")

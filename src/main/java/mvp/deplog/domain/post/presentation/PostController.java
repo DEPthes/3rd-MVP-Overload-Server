@@ -9,6 +9,7 @@ import mvp.deplog.domain.post.application.PostService;
 import mvp.deplog.domain.post.dto.response.CreatePostRes;
 import mvp.deplog.domain.post.dto.request.CreatePostReq;
 import mvp.deplog.domain.post.dto.response.TempListRes;
+import mvp.deplog.domain.post.dto.response.TempPostDetailRes;
 import mvp.deplog.global.common.Message;
 import mvp.deplog.global.common.PageResponse;
 import mvp.deplog.global.common.SuccessResponse;
@@ -112,6 +113,13 @@ public class PostController implements PostApi {
     @GetMapping("/temps")
     public ResponseEntity<SuccessResponse<List<TempListRes>>> getAllTempPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok(postService.getAllTempPosts(userDetails.getMember().getId()));
+    }
+
+    @Override
+    @GetMapping("/temps/details/{postId}")
+    public ResponseEntity<SuccessResponse<TempPostDetailRes>> getTempPostDetails(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                                 @PathVariable(value = "postId") Long postId) {
+        return ResponseEntity.ok(postService.getTempPostDetails(userDetails, postId));
     }
 
     @Override
