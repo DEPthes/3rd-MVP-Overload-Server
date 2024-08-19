@@ -352,10 +352,6 @@ public class PostService {
 
     @Transactional
     public SuccessResponse<TempPostDetailRes> getTempPostDetails(UserDetailsImpl userDetails, Long postId) {
-        if(userDetails == null) {
-            throw new UnauthorizedException("로그인 후 이용해주세요.");
-        }
-
         Long memberId = userDetails.getMember().getId();
         Post post = postRepository.findByIdAndStage(postId, Stage.TEMP)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
