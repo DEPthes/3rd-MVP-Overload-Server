@@ -49,7 +49,7 @@ public class SecurityConfig {
             "/likes/**",
             "/members/**",
             "/scraps/**",
-            "/posts/{postId:[0-9]+}", "/posts/temps", "/posts", "/posts/uploadImages", "/posts/temps", "/posts/publishing/{postId:[0-9]+}", "/posts/edits/{postId:[0-9]+}"
+            "/posts/{postId:[0-9]+}", "/posts/temps", "/posts", "/posts/uploadImages", "/posts/temps", "/posts/publishing/{postId:[0-9]+}", "/posts/edits/{postId:[0-9]+}", "/posts/temps/details/{postId:[0-9]+}"
     };
 
     @Bean

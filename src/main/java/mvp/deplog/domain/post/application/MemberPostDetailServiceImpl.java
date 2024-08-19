@@ -8,8 +8,8 @@ import mvp.deplog.domain.member.domain.Role;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
 import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
+import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
-import mvp.deplog.domain.post.dto.response.AnonymousPostDetailRes;
 import mvp.deplog.domain.post.dto.response.MemberPostDetailRes;
 import mvp.deplog.domain.post.exception.ResourceNotFoundException;
 import mvp.deplog.domain.scrap.domain.repository.ScrapRepository;
@@ -42,7 +42,7 @@ public class MemberPostDetailServiceImpl implements PostDetailService<MemberPost
     @Transactional
     public SuccessResponse<MemberPostDetailRes> getPostDetail(UserDetailsImpl userDetails, Long postId) {
         Long memberId = userDetails.getMember().getId();
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByIdAndStage(postId, Stage.PUBLISHED)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 id의 게시글을 찾을 수 없습니다: " + postId));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 멤버를 찾을 수 없습니다: " + memberId));
