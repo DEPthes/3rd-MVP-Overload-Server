@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import mvp.deplog.domain.member.dto.Avatar;
 
 import java.time.LocalDate;
 
@@ -28,6 +29,9 @@ public class PostListRes {
     @Schema(type = "LocalDate", example = "2024-08-05", description= "게시글 작성 날짜입니다.")
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate createdDate;
+
+    @Schema(type = "Avatar", description = "작성자의 아바타 이미지 객체입니다.")
+    private Avatar avatar;
 
     @Schema(type = "String", example = "홍길동", description= "게시글 작성자의 이름입니다.")
     private String name;

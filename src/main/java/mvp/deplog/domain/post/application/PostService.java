@@ -6,6 +6,7 @@ import mvp.deplog.domain.likes.domain.repository.LikesRepository;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.Part;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.Stage;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
@@ -129,6 +130,13 @@ public class PostService {
                 .previewContent(post.getPreviewContent())
                 .previewImage(post.getPreviewImage())
                 .createdDate(post.getCreatedDate().toLocalDate())
+                .avatar(Avatar.builder()
+                        .avatarFace(post.getMember().getAvatarFace())
+                        .avatarBody(post.getMember().getAvatarBody())
+                        .avatarEyes(post.getMember().getAvatarEyes())
+                        .avatarNose(post.getMember().getAvatarNose())
+                        .avatarMouth(post.getMember().getAvatarMouth())
+                        .build())
                 .name(post.getMember().getName())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
@@ -200,6 +208,13 @@ public class PostService {
                     .previewContent(post.getPreviewContent())
                     .previewImage(post.getPreviewImage())
                     .createdDate(post.getCreatedDate().toLocalDate())
+                    .avatar(Avatar.builder()
+                            .avatarFace(post.getMember().getAvatarFace())
+                            .avatarBody(post.getMember().getAvatarBody())
+                            .avatarEyes(post.getMember().getAvatarEyes())
+                            .avatarNose(post.getMember().getAvatarNose())
+                            .avatarMouth(post.getMember().getAvatarMouth())
+                            .build())
                     .name(post.getMember().getName())
                     .viewCount(post.getViewCount())
                     .likeCount(post.getLikeCount())
