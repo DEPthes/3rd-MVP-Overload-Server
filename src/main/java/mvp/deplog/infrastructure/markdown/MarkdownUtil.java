@@ -23,6 +23,16 @@ public class MarkdownUtil {
         return text.isEmpty() ? EMPTY_STRING : text;
     }
 
+    // Markdown -> (Html) -> WholeText (개행 포함)
+    public static String extractPlainWholeText(String markdown) {
+        String html = markdownToHtml(markdown);
+        Document document = Jsoup.parse(html);
+        document.outputSettings(new Document.OutputSettings().prettyPrint(false)); // this will preserve whitespace and newlines
+        String text = document.body().wholeText();
+        return text.isEmpty() ? EMPTY_STRING : text;
+    }
+
+
     // Markdown -> (Html) -> ImageUrl list
     public static List<String> extractImageLinks(String markdown) {
         String html = markdownToHtml(markdown);
@@ -37,11 +47,11 @@ public class MarkdownUtil {
     }
 
     // Markdown -> (Html) -> Text -> Preview Content
-    public static String extractPreviewContent(String content) {
-        if (content == null || content.isEmpty())
+    public static String extractPreviewContent(String markdown) {
+        if (markdown == null || markdown.isEmpty())
             return EMPTY_STRING;
 
-        String plainText = extractPlainText(content);
+        String plainText = extractPlainWholeText(markdown);
         if (plainText.length() > 100)
             return plainText.substring(0, 100);
          else
