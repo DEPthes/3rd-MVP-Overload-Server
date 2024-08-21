@@ -200,6 +200,12 @@ public class AuthServiceImpl implements AuthService{
                 }
             }
             commentRepository.deleteAll(postCommentList);
+
+            List<Likes> postLikes = likesRepository.findByPost(post);
+            likesRepository.deleteAll(postLikes);
+
+            List<Scrap> postScraps = scrapRepository.findByPost(post);
+            scrapRepository.deleteAll(postScraps);
         }
 
         postRepository.deleteAll(postList);
