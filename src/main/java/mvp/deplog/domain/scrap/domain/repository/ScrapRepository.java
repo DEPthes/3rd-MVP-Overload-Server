@@ -21,4 +21,6 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     List<Scrap> findAllByMember(Member member);
 
     void deleteByPost(Post post);
+
+    List<Scrap> findByPost(Post post);
 }
