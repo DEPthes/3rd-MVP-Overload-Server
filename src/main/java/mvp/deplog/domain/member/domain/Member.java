@@ -72,7 +72,7 @@ public class Member extends BaseEntity {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.role = Role.MEMBER;
+        this.role = Role.APPLICANT;
         this.generation = generation;
         this.part = part;
         this.avatarFace = null;
