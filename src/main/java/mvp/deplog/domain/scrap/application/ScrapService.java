@@ -3,6 +3,7 @@ package mvp.deplog.domain.scrap.application;
 import lombok.RequiredArgsConstructor;
 import mvp.deplog.domain.member.domain.Member;
 import mvp.deplog.domain.member.domain.repository.MemberRepository;
+import mvp.deplog.domain.member.dto.Avatar;
 import mvp.deplog.domain.post.domain.Post;
 import mvp.deplog.domain.post.domain.repository.PostRepository;
 import mvp.deplog.domain.post.dto.response.PostListRes;
@@ -80,12 +81,21 @@ public class ScrapService {
 
         Page<PostListRes> scrapPostList = scrapPosts.map(scrap -> {
             Post post = scrap.getPost();
+            Member writer = post.getMember();
             return PostListRes.builder()
                     .id(post.getId())
                     .title(post.getTitle())
                     .previewContent(post.getPreviewContent())
                     .previewImage(post.getPreviewImage())
                     .createdDate(post.getCreatedDate().toLocalDate())
+                    .avatar(Avatar.builder()
+                            .avatarFace(writer.getAvatarFace())
+                            .avatarBody(writer.getAvatarBody())
+                            .avatarEyes(writer.getAvatarEyes())
+                            .avatarNose(writer.getAvatarNose())
+                            .avatarMouth(writer.getAvatarMouth())
+                            .build()
+                    )
                     .name(post.getMember().getName())
                     .viewCount(post.getViewCount())
                     .likeCount(post.getLikeCount())
