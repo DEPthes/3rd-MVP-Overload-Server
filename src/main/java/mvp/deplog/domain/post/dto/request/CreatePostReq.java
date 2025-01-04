@@ -2,11 +2,13 @@ package mvp.deplog.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder // 추가
 public class CreatePostReq {
 
     @Schema(type = "String", example = "게시글 제목", description= "게시글 제목입니다.")
