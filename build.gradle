@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.5'
+    id "org.sonarqube" version "5.1.0.4882"
+    id 'jacoco'
 }
 
 group = 'mvp'
@@ -75,12 +77,89 @@ dependencies {
     // jsoup
     implementation 'org.jsoup:jsoup:1.18.1'
 
+    // SonarQube
+    implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport // Generates report after tests are run
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+}
+
+// jacoco Report 생성
+jacocoTestReport {
+    dependsOn test // test 종속성 추가
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+
+    def QDomainList = []
+    for (qPattern in '**/QA'..'**/QZ') { // QClass 대응
+        QDomainList.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: [
+                        "mvp/deplog/domain/**/dto/**",
+                        "mvp/deplog/domain/**/exception/**",
+                        "mvp/deplog/domain/**/presentation/**",
+                ] + QDomainList)
+            })
+        )
+    }
+//    finalizedBy 'jacocoTestCoverageVerification' // jacocoTestReport 태스크가 끝난 후 실행
+}
+
+// jacoco Test 유효성 확인
+jacocoTestCoverageVerification {
+    def QDomainList = []
+    for (qPattern in '*.QA'..'*.QZ') { // QClass 대응
+        QDomainList.add(qPattern + '*')
+    }
+
+    violationRules {
+        rule {
+            enabled = true // 규칙 활성화
+            element = 'CLASS' // 커버리지 체크 단위 설정
+
+            // 코드 커버리지를 측정할 때 사용되는 지표
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.30
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.30
+            }
+
+            excludes = [
+                    "co.kirikiri.domain.**.**",
+                    "**.*Application*",
+                    "**.*Config*",
+                    "**.*Interceptor*",
+                    "**.*Exception*",
+                    "**.*Controller*",
+                    "**.*Repository*",
+                    "**.*Dto*"
+            ] + QDomainList
+        }
+    }
 }

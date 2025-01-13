@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static mvp.deplog.domain.post.constant.PostConstant.*;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -56,7 +58,6 @@ public class PostService {
     private final LikesRepository likesRepository;
     private final ScrapRepository scrapRepository;
 
-    private static final String DIRNAME = "post";
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
